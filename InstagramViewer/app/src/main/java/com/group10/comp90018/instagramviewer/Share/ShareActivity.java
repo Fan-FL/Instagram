@@ -121,6 +121,11 @@ public class ShareActivity extends AppCompatActivity {
         }
     }
 
+    public int getTask(){
+        Log.d(TAG, "getTask: Task: " + getIntent().getFlags());
+        return getIntent().getFlags();
+    }
+
 
     /**
      * BottomNavigationView setup

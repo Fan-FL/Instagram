@@ -1,5 +1,6 @@
 package com.group10.comp90018.instagramviewer.Profile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
@@ -35,6 +36,7 @@ import com.group10.comp90018.instagramviewer.Models.User;
 import com.group10.comp90018.instagramviewer.Models.UserAccountSettings;
 import com.group10.comp90018.instagramviewer.Models.UserSettings;
 import com.group10.comp90018.instagramviewer.R;
+import com.group10.comp90018.instagramviewer.Share.ShareActivity;
 import com.group10.comp90018.instagramviewer.Utils.FirebaseMethods;
 import com.group10.comp90018.instagramviewer.Utils.UniversalImageLoader;
 
@@ -150,6 +152,7 @@ public class EditProfileFragment extends Fragment implements
                 saveProfileSettings();
             }
         });
+
         return view;
     }
 
@@ -245,6 +248,17 @@ public class EditProfileFragment extends Fragment implements
         mDescription.setText(settings.getDescription());
         mEmail.setText(userSettings.getUser().getEmail());
         mPhoneNumber.setText(String.valueOf(userSettings.getUser().getPhone_number()));
+
+        mChangeProfilePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: attempting to change profile photo");
+                Intent intent = new Intent(getActivity(),ShareActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getActivity().startActivity(intent);
+                getActivity().finish();
+            }
+        });
     }
 
     /*
@@ -260,6 +274,7 @@ public class EditProfileFragment extends Fragment implements
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mReference = mFirebaseDatabase.getReference();
         userID = mAuth.getCurrentUser().getUid();
+
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {

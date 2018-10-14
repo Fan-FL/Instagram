@@ -1,6 +1,7 @@
 package com.group10.comp90018.instagramviewer.Share;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.group10.comp90018.instagramviewer.Profile.AccountSettingsActivity;
 import com.group10.comp90018.instagramviewer.R;
 import com.group10.comp90018.instagramviewer.Utils.Permissions;
 
@@ -49,6 +51,14 @@ public class PhotoFragment extends Fragment {
         return view;
     }
 
+    private boolean isRootTask(){
+        if(((ShareActivity)getActivity()).getTask() == 0){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -57,6 +67,25 @@ public class PhotoFragment extends Fragment {
             Log.d(TAG, "onActivityResult: done taking a photo.");
             Log.d(TAG, "onActivityResult: attempting to navigate to final share screen");
             //navigate to the final share screen to publish photo
+
+            Bitmap bitmap;
+            bitmap = (Bitmap) data.getExtras().get("data");
+            
+            if(isRootTask()){
+
+            }else {
+                try{
+                    Log.d(TAG, "onActivityResult: navigating account setting screen");
+                    Intent intent = new Intent(getActivity(), AccountSettingsActivity.class);
+                    intent.putExtra(getString(R.string.selected_bitmap),bitmap);
+                    intent.putExtra(getString(R.string.return_fragment),getString(R.string.edit_profile_fragment));
+                    startActivity(intent);
+                    getActivity().finish();
+                }catch (NullPointerException e){
+                    Log.d(TAG, "onActivityResult: NullPointerException: PhotoFragement");
+                }
+
+            }
         }
     }
 }

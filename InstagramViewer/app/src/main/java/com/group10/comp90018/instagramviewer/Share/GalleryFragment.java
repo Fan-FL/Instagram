@@ -68,10 +68,19 @@ public class GalleryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to the final share screen");
-                Intent intent = new Intent(getActivity(), NextActivity.class);
-                intent.putExtra(getString(R.string.selected_image),mSelectedImage);
-                startActivity(intent);
-                Log.d(TAG, "onClick: navigating share screen");
+                if(isRootTask()){
+                    Intent intent = new Intent(getActivity(), NextActivity.class);
+                    intent.putExtra(getString(R.string.selected_image),mSelectedImage);
+                    startActivity(intent);
+                }else {
+                    Log.d(TAG, "onClick: navigating account setting screen");
+                    Intent intent = new Intent(getActivity(), AccountSettingsActivity.class);
+                    intent.putExtra(getString(R.string.selected_image),mSelectedImage);
+                    intent.putExtra(getString(R.string.return_fragment),getString(R.string.edit_profile_fragment));
+                    startActivity(intent);
+                    getActivity().finish();
+
+                }
             }
         });
 
@@ -116,6 +125,13 @@ public class GalleryFragment extends Fragment {
 
     }
 
+    private boolean isRootTask(){
+        if(((ShareActivity)getActivity()).getTask() == 0){
+            return true;
+        }else {
+            return false;
+        }
+    }
 
     private void setupGridView(String selectedDirectory){
         Log.d(TAG, "setupGridView: directory chosen: " + selectedDirectory);
