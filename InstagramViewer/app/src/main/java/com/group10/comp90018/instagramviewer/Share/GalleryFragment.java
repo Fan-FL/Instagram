@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.group10.comp90018.instagramviewer.Profile.AccountSettingsActivity;
 import com.group10.comp90018.instagramviewer.R;
 import com.group10.comp90018.instagramviewer.Utils.FilePath;
 import com.group10.comp90018.instagramviewer.Utils.FileSearch;

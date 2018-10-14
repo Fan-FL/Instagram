@@ -36,7 +36,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
     private static final String TAG = "AccountSettingsActivity";
     private static final int ACTIVITY_NUM = 4;
     private Context mContext;
-    private SectionStatePagerAdapter pagerAdapter;
+    public SectionStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
     private RelativeLayout mRelativeLayout;
     //firebase
