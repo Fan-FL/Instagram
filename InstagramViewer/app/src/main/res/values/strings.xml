@@ -47,6 +47,7 @@
     <string name="string_next">Next</string>
     <string name="selected_image">selected_image</string>
     <string name="string_share">Share</string>
+    <string name="choose_picture">Choose picture</string>
 
 
 </resources>

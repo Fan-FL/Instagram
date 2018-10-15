@@ -22,34 +22,44 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="60">
+            android:layout_weight="90">
 
             <ImageView
+                android:id="@+id/galleryImageView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/galleryImageView"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop" />
 
             <ProgressBar
+                android:id="@+id/progressbar"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:id="@+id/progressbar"
-                android:layout_centerInParent="true"/>
-            
+                android:layout_centerInParent="true" />
+
         </RelativeLayout>
-        <GridView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="40"
-            android:id="@+id/gridView"
-            android:numColumns="3"
-            android:verticalSpacing="2dp"
-            android:horizontalSpacing="2dp"
-            android:stretchMode="none"
-            android:gravity="center"
-            android:layout_marginTop="1dp">
+            android:layout_weight="10">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/choose_pic_button"
+                android:text="@string/choose_picture"/>
+        </LinearLayout>
+        <!--<GridView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="40"-->
+            <!--android:id="@+id/gridView"-->
+            <!--android:numColumns="3"-->
+            <!--android:verticalSpacing="2dp"-->
+            <!--android:horizontalSpacing="2dp"-->
+            <!--android:stretchMode="none"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_marginTop="1dp">-->
 
-        </GridView>
+        <!--</GridView>-->
     </LinearLayout>
 
 </RelativeLayout>

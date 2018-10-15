@@ -2,6 +2,7 @@ package com.group10.comp90018.instagramviewer.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class FileSearch {
 
@@ -55,6 +56,9 @@ public class FileSearch {
                     pathArray.add(listfiles[i].getAbsolutePath());
                 }
             }
+        }
+        if (!pathArray.isEmpty()){
+            Collections.reverse(pathArray);
         }
         return pathArray;
     }
