@@ -1,7 +1,9 @@
 package com.group10.comp90018.instagramviewer.Share;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -28,6 +30,8 @@ import java.util.ArrayList;
 
 public class GalleryFragment extends Fragment {
     private static final String TAG = "GalleryFragment";
+    private static final int PHOTO_FROM_GALLERY = 1;
+    private static final int PHOTO_FROM_CAMERA = 2;
 
     //constants
     private static final int NUM_GRID_COLUMNS = 3;
@@ -81,19 +85,25 @@ public class GalleryFragment extends Fragment {
     private void init(){
         FilePath filePath = new FilePath();
 
+        //check for other folder inside "/storage/emulated/0/DCIM"
+        if (FileSearch.getDirectoryPaths(filePath.DCIM) != null){
+            directories.add(filePath.DCIM);
+        }
+
+//        ArrayList<String> directoryNames = new ArrayList<>();
+//        for(int i = 0; i < directories.size(); i++){
+//            int index = directories.get(i).lastIndexOf("/");
+//            String string = directories.get(i).substring(index);
+//            directoryNames.add(string);
+//        }
+
+        directories.add(filePath.CAMERA);
+
         //check for other folder inside "/storage/emulated/0/picture"
         if (FileSearch.getDirectoryPaths(filePath.PICTURES) != null){
             directories.add(filePath.PICTURES);
         }
 
-        ArrayList<String> directoryNames = new ArrayList<>();
-        for(int i = 0; i < directories.size(); i++){
-            int index = directories.get(i).lastIndexOf("/");
-            String string = directories.get(i).substring(index);
-            directoryNames.add(string);
-        }
-
-        directories.add(filePath.CAMERA);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item,directories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -113,12 +123,14 @@ public class GalleryFragment extends Fragment {
             }
         });
 
+        directorySpinner.setSelection(0, true);
+
     }
 
 
     private void setupGridView(String selectedDirectory){
         Log.d(TAG, "setupGridView: directory chosen: " + selectedDirectory);
-        final ArrayList<String> imgURLs = FileSearch.getFilePaths(selectedDirectory);
+        final ArrayList<String> imgURLs = FileSearch.getImageFilePaths(selectedDirectory);
 
         // //set the grid column width
         int gridWidth = getResources().getDisplayMetrics().widthPixels;
@@ -128,6 +140,10 @@ public class GalleryFragment extends Fragment {
         //use the grid adapter to adapt the images to gridview
         GridImageAdapter gridImageAdapter = new GridImageAdapter(getActivity(),R.layout.layout_grid_imageview,APPEND,imgURLs);
         gridView.setAdapter(gridImageAdapter);
+
+        if (imgURLs.isEmpty()){
+            return;
+        }
 
         //set the first image to be displayed
         setImage(imgURLs.get(0),galleryImages,APPEND);
@@ -160,6 +176,12 @@ public class GalleryFragment extends Fragment {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 mProgressBar.setVisibility(view.INVISIBLE);
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.e("1", "1111");
+                    }
+                });
             }
 
             @Override

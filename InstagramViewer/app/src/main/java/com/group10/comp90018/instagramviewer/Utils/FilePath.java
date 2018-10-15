@@ -13,7 +13,11 @@ public class FilePath {
     //Return the primary shared/external storage directory.
     public String ROOT_DIR = Environment.getExternalStorageDirectory().getPath();
 
-    public String PICTURES = ROOT_DIR + "/Pictures";
+    //    public String PICTURES = ROOT_DIR + "/Pictures";
+//    public String PICTURES  = android.os.Environment.DIRECTORY_DCIM;
+    public String DCIM  = Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/";
+    public String PICTURES  = Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_PICTURES + "/";
+
     public String CAMERA = ROOT_DIR + "/DCIM/Camera";
 
     public String FIREBASE_IMAGE_STORAGE = "photos/users/";

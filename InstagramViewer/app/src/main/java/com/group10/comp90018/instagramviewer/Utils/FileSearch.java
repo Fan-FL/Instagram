@@ -39,4 +39,23 @@ public class FileSearch {
         return pathArray;
     }
 
+    /**
+     * search a directory and return a list of all files contained inside
+     * @param directory
+     * @return
+     */
+    public static ArrayList<String> getImageFilePaths(String directory){
+        ImageFileNameFilter imageFileNameFilter = new ImageFileNameFilter();
+        ArrayList<String> pathArray = new ArrayList<>();
+        File file = new File(directory);
+        File[] listfiles = file.listFiles();
+        for(int i = 0; i<listfiles.length; i++){
+            if(listfiles[i].isFile()){
+                if (imageFileNameFilter.accept(listfiles[i].getAbsolutePath())){
+                    pathArray.add(listfiles[i].getAbsolutePath());
+                }
+            }
+        }
+        return pathArray;
+    }
 }
