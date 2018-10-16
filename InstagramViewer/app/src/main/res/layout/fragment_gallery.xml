@@ -23,72 +23,33 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="90">
-
-            <ja.burhanrashid52.photoeditor.PhotoEditorView
-                android:id="@+id/photoEditorView"
+            android:layout_weight="60">
+            <!--android:layout_weight="90">-->
+            <ImageView
+                android:id="@+id/galleryImageView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-            <!--<ImageView-->
-                <!--android:id="@+id/galleryImageView"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:scaleType="centerCrop" />-->
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
 
-            <!--<ProgressBar-->
-                <!--android:id="@+id/progressbar"-->
-                <!--android:layout_width="100dp"-->
-                <!--android:layout_height="100dp"-->
-                <!--android:layout_centerInParent="true" />-->
+            <ProgressBar
+                android:id="@+id/progressbar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerInParent="true" />
 
         </RelativeLayout>
-        <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        <GridView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="10">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/choose_pic_button"
-                        android:text="@string/choose_picture"/>
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/cropButton"
-                        android:text="@string/crop"/>
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/blackWhiteButton"
-                        android:text="@string/black_white"/>
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/sharpenButton"
-                        android:text="@string/sharpen"/>
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/documentaryButton"
-                        android:text="@string/documentary"/>
-            </LinearLayout>
-        </HorizontalScrollView>
-        <!--<GridView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:layout_weight="40"-->
-            <!--android:id="@+id/gridView"-->
-            <!--android:numColumns="3"-->
-            <!--android:verticalSpacing="2dp"-->
-            <!--android:horizontalSpacing="2dp"-->
-            <!--android:stretchMode="none"-->
-            <!--android:gravity="center"-->
-            <!--android:layout_marginTop="1dp">-->
-
-        <!--</GridView>-->
+            android:layout_weight="40"
+            android:id="@+id/gridView"
+            android:numColumns="3"
+            android:verticalSpacing="2dp"
+            android:horizontalSpacing="2dp"
+            android:stretchMode="none"
+            android:gravity="center"
+            android:layout_marginTop="1dp">
+        </GridView>
     </LinearLayout>
 
 </RelativeLayout>

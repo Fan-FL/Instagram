@@ -13,11 +13,14 @@ public class FileSearch {
      */
     public static ArrayList<String> getDirectoryPaths(String directory){
         ArrayList<String> pathArray = new ArrayList<>();
+        pathArray.add(directory);
         File file = new File(directory);
         File[] listfiles = file.listFiles();
         for(int i = 0; i<listfiles.length; i++){
             if(listfiles[i].isDirectory()){
-                pathArray.add(listfiles[i].getAbsolutePath());
+                if(hasImage(listfiles[i].getAbsolutePath())){
+                    pathArray.add(listfiles[i].getAbsolutePath());
+                }
             }
         }
         return pathArray;
@@ -61,5 +64,19 @@ public class FileSearch {
             Collections.reverse(pathArray);
         }
         return pathArray;
+    }
+
+    private static boolean hasImage(String directory){
+        ImageFileNameFilter imageFileNameFilter = new ImageFileNameFilter();
+        File file = new File(directory);
+        File[] listfiles = file.listFiles();
+        for(int i = 0; i<listfiles.length; i++){
+            if(listfiles[i].isFile()){
+                if (imageFileNameFilter.accept(listfiles[i].getAbsolutePath())){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
