@@ -1,16 +1,21 @@
 package com.group10.comp90018.instagramviewer.Share;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.media.effect.EffectFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.group10.comp90018.instagramviewer.R;
@@ -18,59 +23,66 @@ import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
 import java.io.File;
-import java.util.ArrayList;
 
+import ja.burhanrashid52.photoeditor.CustomEffect;
+import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
 import ja.burhanrashid52.photoeditor.PhotoFilter;
 
 public class GalleryPhotoEditorActivity extends AppCompatActivity {
     private static final String TAG = "GalleryPhotoEditor";
-    private static final int PHOTO_FROM_GALLERY = 1;
-    private static final int PHOTO_FROM_CAMERA = 2;
-
     //constants
-    private static final int NUM_GRID_COLUMNS = 3;
-    private static final String APPEND = "file:/";
 
     //widgets
-//    private GridView gridView;
-//    private ImageView galleryImages;
-//    private ProgressBar mProgressBar;
     private Button cropButton;
     private Button blackWhiteButton;
     private Button sharpenButton;
     private Button documentaryButton;
+    private Button bright_contrastButton;
     private PhotoEditorView mPhotoEditorView;
+    private SeekBar contrastseekbar;
+    private SeekBar brightnessseekbar;
+    private LinearLayout seekbars;
     private ja.burhanrashid52.photoeditor.PhotoEditor mPhotoEditor;
-    private String mSelectedImage;
 
     //vars
-    private ArrayList<String> directories;
     private String imagePath;
-
     private Uri imageUri;
+    private String saveFilePath;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: GalleryPhotoEditorActivity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_editor);
         mPhotoEditorView = findViewById(R.id.photoEditorView);
-        directories = new ArrayList<>();
-        cropButton = (Button)findViewById(R.id.cropButton);
-        blackWhiteButton = (Button)findViewById(R.id.blackWhiteButton);
-        sharpenButton = (Button)findViewById(R.id.sharpenButton);
-        documentaryButton = (Button)findViewById(R.id.documentaryButton);
+        cropButton = (Button) findViewById(R.id.cropButton);
+        blackWhiteButton = (Button) findViewById(R.id.blackWhiteButton);
+        sharpenButton = (Button) findViewById(R.id.sharpenButton);
+        documentaryButton = (Button) findViewById(R.id.documentaryButton);
+        bright_contrastButton = (Button) findViewById(R.id.bright_contrastButton);
+        brightnessseekbar = (SeekBar) findViewById(R.id.brightnessseekbar);
+        contrastseekbar = (SeekBar) findViewById(R.id.contrastseekbar);
+        seekbars = (LinearLayout) findViewById(R.id.seekbars);
         Log.d(TAG, "onCreateView: started");
 
         Intent intent = getIntent();
-        mSelectedImage = intent.getStringExtra(getString(R.string.selected_image));
-        if (!mSelectedImage.isEmpty()){
-            File picPath = new File(mSelectedImage);
+        imagePath = intent.getStringExtra(getString(R.string.selected_image));
+        if (!imagePath.isEmpty()) {
+            File picPath = new File(imagePath);
             imageUri = Uri.fromFile(picPath);
             mPhotoEditorView.getSource().setImageURI(imageUri);
             mPhotoEditor = new ja.burhanrashid52.photoeditor.PhotoEditor.Builder(this, mPhotoEditorView).build();
 
         }
+
+        File outDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        if (!outDir.exists()) {
+            outDir.mkdirs();
+        }
+        File outFile = new File(outDir, System.currentTimeMillis() + ".jpg");
+        //裁剪后图片的绝对路径
+        Log.e("111", outFile.getAbsolutePath());
+        saveFilePath = outFile.getAbsolutePath();
 
         ImageView shareClose = (ImageView) findViewById(R.id.ivCloseShare);
         shareClose.setOnClickListener(new View.OnClickListener() {
@@ -81,27 +93,61 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
             }
         });
 
-        TextView nextScreen = (TextView)findViewById(R.id.tvNext);
+        TextView nextScreen = (TextView) findViewById(R.id.tvNext);
         nextScreen.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("MissingPermission")
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: navigating to the final share screen");
-                Intent intent = new Intent(GalleryPhotoEditorActivity.this, NextActivity.class);
-                intent.putExtra(getString(R.string.selected_image),mSelectedImage);
-                startActivity(intent);
-                Log.d(TAG, "onClick: navigating share screen");
+                mPhotoEditor.saveAsFile(saveFilePath, new PhotoEditor.OnSaveListener() {
+                    @Override
+                    public void onSuccess(@NonNull String imagePath) {
+                        Log.e("PhotoEditor", "Image Saved Successfully");
+                        File picPath = new File(imagePath);
+                        imageUri = Uri.fromFile(picPath);
+                        mPhotoEditorView.getSource().setImageURI(imageUri);
+                        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, imageUri));
+                        Log.d(TAG, "onClick: navigating to the final share screen");
+                        Intent intent = new Intent(GalleryPhotoEditorActivity.this, NextActivity.class);
+                        intent.putExtra(getString(R.string.selected_image), imagePath);
+                        startActivity(intent);
+                        Log.d(TAG, "onClick: navigating share screen");
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.e("PhotoEditor", "Failed to save Image");
+                    }
+                });
             }
         });
         cropButton.setOnClickListener(new View.OnClickListener() {
-            @Override
+            @SuppressLint("MissingPermission")
             public void onClick(View view) {
-                startUCrop();
+                seekbars.setVisibility(View.GONE);
+                mPhotoEditor.saveAsFile(saveFilePath, new PhotoEditor.OnSaveListener() {
+                    @Override
+                    public void onSuccess(@NonNull String imagePath) {
+                        File picPath = new File(imagePath);
+                        imageUri = Uri.fromFile(picPath);
+                        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, imageUri));
+                        mPhotoEditorView.getSource().setImageURI(imageUri);
+                        startUCrop();
+                        Log.e("PhotoEditor", "Image Saved Successfully");
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.e("PhotoEditor", "Failed to save Image");
+                        startUCrop();
+                    }
+                });
             }
         });
         blackWhiteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mPhotoEditor != null){
+                    seekbars.setVisibility(View.GONE);
                     mPhotoEditor.setFilterEffect(PhotoFilter.BLACK_WHITE);
                 }
             }
@@ -110,6 +156,7 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mPhotoEditor != null){
+                    seekbars.setVisibility(View.GONE);
                     mPhotoEditor.setFilterEffect(PhotoFilter.SHARPEN);
                 }
             }
@@ -118,33 +165,61 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mPhotoEditor != null){
+                    seekbars.setVisibility(View.GONE);
                     mPhotoEditor.setFilterEffect(PhotoFilter.DOCUMENTARY);
-//                    CustomEffect customEffect = new CustomEffect.Builder(EffectFactory.EFFECT_BRIGHTNESS)
-//                            .setParameter("brightness", 0.5f)
-//                            .build();
-//                    mPhotoEditor.setFilterEffect(customEffect);
                 }
+            }
+        });
+        bright_contrastButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mPhotoEditor != null){
+                    seekbars.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        brightnessseekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            // 当拖动条的滑块位置发生改变时触发该方法
+            public void onProgressChanged(SeekBar arg0, int progress,
+                                          boolean fromUser) {
+                float brightness = progress/40.0f;
+                CustomEffect customEffect = new CustomEffect.Builder(EffectFactory.EFFECT_BRIGHTNESS)
+                        .setParameter("brightness", brightness)
+                        .build();
+                mPhotoEditor.setFilterEffect(customEffect);
+
+            }
+
+            public void onStartTrackingTouch(SeekBar bar) {
+            }
+
+            public void onStopTrackingTouch(SeekBar bar) {
+            }
+        });
+
+        contrastseekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            // 当拖动条的滑块位置发生改变时触发该方法
+            public void onProgressChanged(SeekBar arg0, int progress,
+                                          boolean fromUser) {
+                float contrast = progress/50.0f;
+                CustomEffect customEffect = new CustomEffect.Builder(EffectFactory.EFFECT_CONTRAST)
+                        .setParameter("contrast", contrast)
+                        .build();
+                mPhotoEditor.setFilterEffect(customEffect);
+
+            }
+
+            public void onStartTrackingTouch(SeekBar bar) {
+            }
+
+            public void onStopTrackingTouch(SeekBar bar) {
             }
         });
     }
 
-    private void startGallery() {
-        Intent cameraIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        cameraIntent.setType("image/*");
-        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(cameraIntent, 1000);
-        }
-    }
-
-    private String startUCrop(){
-        File outDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        if (!outDir.exists()) {
-            outDir.mkdirs();
-        }
-        File outFile = new File(outDir, System.currentTimeMillis() + ".jpg");
+    private void startUCrop(){
+        File outFile = new File(saveFilePath);
         //裁剪后图片的绝对路径
-        Log.e("111",outFile.getAbsolutePath());
-        String cameraScalePath = outFile.getAbsolutePath();
         Uri destinationUri = Uri.fromFile(outFile);
         UCrop uCrop = UCrop.of(imageUri, destinationUri);
         UCrop.Options options = new UCrop.Options();
@@ -162,7 +237,6 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
         // options.setFreeStyleCropEnabled(true);
         uCrop.withOptions(options);
         uCrop.start(this);
-        return cameraScalePath;
     }
 
     @Override
@@ -173,6 +247,7 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     final Uri croppedUri = UCrop.getOutput(data);
                     imageUri = croppedUri;
+                    mPhotoEditorView.getSource().setImageURI(Uri.EMPTY);
                     mPhotoEditorView.getSource().setImageURI(imageUri);
                     this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, croppedUri));
                 } else if (resultCode == UCrop.RESULT_ERROR) {
