@@ -32,7 +32,6 @@ public class PhotoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: launching camera");
-
                 if(((ShareActivity)getActivity()).getCurrentTabNumber() == PHOTO_FRAGMENT_NUM){
                     if(((ShareActivity)getActivity()).checkPermission(Permissions.CAMERA_PERMISSION[0])){
                         Log.d(TAG, "onClick: starting camera");
@@ -48,6 +47,16 @@ public class PhotoFragment extends Fragment {
                 }
             }
         });
+
+        Button btnLaunchFlash = (Button) view.findViewById(R.id.btnflash);
+        btnLaunchFlash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FlashActivity.class);
+                startActivity(intent);
+            }
+        });
+
         return view;
     }
 
@@ -70,7 +79,7 @@ public class PhotoFragment extends Fragment {
 
             Bitmap bitmap;
             bitmap = (Bitmap) data.getExtras().get("data");
-            
+
             if(isRootTask()){
                 try{
                     Log.d(TAG, "onActivityResult: navigating account setting screen");

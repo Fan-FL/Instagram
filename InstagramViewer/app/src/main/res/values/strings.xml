@@ -49,6 +49,6 @@
     <string name="string_share">Share</string>
     <string name="return_fragment">return_fragment</string>
     <string name="selected_bitmap">selected_bitmap</string>
-
+    <string name="open_flash">Open flash</string>
 
 </resources>

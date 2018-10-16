@@ -104,6 +104,7 @@ public class GalleryFragment extends Fragment {
         }
 
         directories.add(filePath.CAMERA);
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item,directories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -185,7 +186,5 @@ public class GalleryFragment extends Fragment {
             }
         });
     }
-
-
 
 }
