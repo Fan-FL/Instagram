@@ -48,6 +48,10 @@
     <string name="selected_image">selected_image</string>
     <string name="string_share">Share</string>
     <string name="choose_picture">Choose picture</string>
+    <string name="crop">crop</string>
+    <string name="sharpen">sharpen</string>
+    <string name="black_white">black_white</string>
+    <string name="documentary">documentary</string>
 
 
 </resources>

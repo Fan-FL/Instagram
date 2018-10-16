@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -24,29 +25,57 @@
             android:layout_height="0dp"
             android:layout_weight="90">
 
-            <ImageView
-                android:id="@+id/galleryImageView"
+            <ja.burhanrashid52.photoeditor.PhotoEditorView
+                android:id="@+id/photoEditorView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
+                android:layout_height="match_parent"/>
+            <!--<ImageView-->
+                <!--android:id="@+id/galleryImageView"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:scaleType="centerCrop" />-->
 
-            <ProgressBar
-                android:id="@+id/progressbar"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_centerInParent="true" />
+            <!--<ProgressBar-->
+                <!--android:id="@+id/progressbar"-->
+                <!--android:layout_width="100dp"-->
+                <!--android:layout_height="100dp"-->
+                <!--android:layout_centerInParent="true" />-->
 
         </RelativeLayout>
-        <LinearLayout
+        <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="10">
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/choose_pic_button"
-                android:text="@string/choose_picture"/>
-        </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/choose_pic_button"
+                        android:text="@string/choose_picture"/>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/cropButton"
+                        android:text="@string/crop"/>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/blackWhiteButton"
+                        android:text="@string/black_white"/>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/sharpenButton"
+                        android:text="@string/sharpen"/>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/documentaryButton"
+                        android:text="@string/documentary"/>
+            </LinearLayout>
+        </HorizontalScrollView>
         <!--<GridView-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="0dp"-->

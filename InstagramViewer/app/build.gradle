@@ -50,6 +50,9 @@ dependencies {
     //Firebase storage
     implementation 'com.google.firebase:firebase-storage:16.0.3'
 
+    implementation 'ja.burhanrashid52:photoeditor:0.3.3'
+    compile 'com.github.yalantis:ucrop:2.2.2-native'
+
 }
 //Firebase
 apply plugin: 'com.google.gms.google-services'
