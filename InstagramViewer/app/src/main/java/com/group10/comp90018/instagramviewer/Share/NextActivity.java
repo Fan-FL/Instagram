@@ -90,10 +90,15 @@ public class NextActivity extends AppCompatActivity {
      * get the image url from the incoming intent and displays the chosen image
      */
     private void setImage(){
-        Intent intent = getIntent();
+        intent = getIntent();
         ImageView imageView = (ImageView) findViewById(R.id.imageShare);
-        imgUrl = intent.getStringExtra(getString(R.string.selected_image));
-        UniversalImageLoader.setImage(imgUrl, imageView,null, mAppend);
+        if (intent.hasExtra(getString(R.string.selected_image))) {
+            imgUrl = intent.getStringExtra(getString(R.string.selected_image));
+            UniversalImageLoader.setImage(imgUrl, imageView,null, mAppend);
+        }else if(intent.hasExtra(getString(R.string.selected_bitmap))){
+            bitmap = intent.getParcelableExtra(getString(R.string.selected_bitmap));
+            imageView.setImageBitmap(bitmap);
+        }
 
     }
 

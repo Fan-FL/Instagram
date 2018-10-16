@@ -286,7 +286,7 @@ public class FirebaseMethods {
         myReference.child(mContext.getString(R.string.dbname_user_account_settings))
                 .child(userID).child(mContext.getString(R.string.field_username))
                 .setValue(username);
-        
+
     }
 
     /**
@@ -447,7 +447,7 @@ public class FirebaseMethods {
                 }
             });
         }
-    
+
     }
 
     private void setProfilePhoto(String downloadUrl) {
