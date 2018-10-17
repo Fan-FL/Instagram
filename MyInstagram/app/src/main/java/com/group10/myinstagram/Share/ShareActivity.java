@@ -62,7 +62,7 @@ public class ShareActivity extends AppCompatActivity {
     private void setupViewPager(){
         SectionPagerAdapter adapter = new SectionPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new GalleryFragment());
-        adapter.addFragment(new PhotoFragment());
+        adapter.addFragment(new CameraFragment());
 
         mViewPaper = (ViewPager) findViewById(R.id.container);
         mViewPaper.setAdapter(adapter);
@@ -71,7 +71,7 @@ public class ShareActivity extends AppCompatActivity {
         tableLayout.setupWithViewPager(mViewPaper);
 
         tableLayout.getTabAt(0).setText(getString(R.string.gallery));
-        tableLayout.getTabAt(1).setText(getString(R.string.photo));
+        tableLayout.getTabAt(1).setText("CAMERA");
     }
 
     /**

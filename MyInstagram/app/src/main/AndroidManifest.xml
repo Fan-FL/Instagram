@@ -28,6 +28,7 @@
         <activity android:name=".Profile.ProfileActivity"></activity>
         <activity android:name=".Share.NextActivity"></activity>
         <activity android:name=".Share.GalleryPhotoEditorActivity"></activity>
+        <!--<activity android:name=".Share.CameraFragment"></activity>-->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"

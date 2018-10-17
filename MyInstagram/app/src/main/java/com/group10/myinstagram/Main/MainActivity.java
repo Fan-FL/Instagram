@@ -1,8 +1,5 @@
 package com.group10.myinstagram.Main;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +13,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.group10.myinstagram.Login.LoginActivity;
 import com.group10.myinstagram.R;
 import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
