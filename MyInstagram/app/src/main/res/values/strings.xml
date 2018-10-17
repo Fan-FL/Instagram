@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">InstagramViewer</string>
+    <string name="followers">Followers</string>
+    <string name="_180">180</string>
+    <string name="_300">300</string>
+    <string name="posts">Posts</string>
+    <string name="following">Following</string>
+    <string name="_240">240</string>
+    <string name="edit_your_profile">Edit your profile</string>
+    <string name="edit_profile_fragment">Edit Profile</string>
+    <string name="sign_out_fragment">Sign Out</string>
+    <string name="profile_fragment">Profile</string>
+
+    <!-- Firebase -->
+    <string name="auth_failed">Failed to Authenticate</string>
+    <string name="auth_success">Authenticate Success</string>
+
+    <!-- Firebase database fields -->
+    <string name="dbname_users">users</string>
+    <string name="dbname_user_account_settings">user_account_settings</string>
+    <string name="dbname_user_photos">user_photos</string>
+    <string name="dbname_photos">photos</string>
+    <string name="field_username">username</string>
+    <string name="field_email">email</string>
+    <string name="field_display_name">display_name</string>
+    <string name="field_website">website</string>
+    <string name="field_description">description</string>
+    <string name="field_phone_number">phone_number</string>
+
+    <!-- Dialog names -->
+    <string name="confirm_password_dialog">ConfirmPasswordDialog</string>
+
+    <!-- Photo names -->
+    <string name="new_photo">new_photo</string>
+    <string name="profile_photo">profile_photo</string>
+
+    <!-- Intent Extras -->
+    <string name="calling_activity">Calling Activity</string>
+
+    <!-- Activity -->
+    <string name="profile_activity">Profile Activity</string>
+
+    <!-- Strings -->
+    <string name="gallery">GALLERY</string>
+    <string name="photo">PHOTO</string>
+    <string name="string_open_camera">Open Camera</string>
+    <string name="string_next">Next</string>
+    <string name="selected_image">selected_image</string>
+    <string name="string_share">Share</string>
+    <string name="choose_picture">Choose picture</string>
+    <string name="crop">Crop</string>
+    <string name="sharpen">Sharpen</string>
+    <string name="black_white">Black_white</string>
+    <string name="documentary">Documentary</string>
+    <string name="Brightness">Brightness</string>
+    <string name="Contrast">Contrast</string>
+    <string name="brightness_contrast">Brightness_contrast</string>
+
+
+</resources>
