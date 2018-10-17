@@ -51,6 +51,18 @@
             android:layout_below="@id/relLayout2">
 
             <include layout="@layout/layout_navigation"/>
+
+            <Button
+                android:id="@+id/btn_bluetooth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="155dp"
+                android:layout_marginTop="100dp"
+                android:layout_marginEnd="141dp"
+                android:text="find pair" />
         </RelativeLayout>
 
     </RelativeLayout>
