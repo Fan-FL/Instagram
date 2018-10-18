@@ -28,21 +28,27 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.group10.comp90018.instagramviewer.Models.Photo;
 import com.group10.comp90018.instagramviewer.Models.User;
 import com.group10.comp90018.instagramviewer.Models.UserAccountSettings;
 import com.group10.comp90018.instagramviewer.Models.UserSettings;
 import com.group10.comp90018.instagramviewer.R;
 import com.group10.comp90018.instagramviewer.Utils.BottomNavigationViewHelper;
 import com.group10.comp90018.instagramviewer.Utils.FirebaseMethods;
+import com.group10.comp90018.instagramviewer.Utils.GridImageAdapter;
 import com.group10.comp90018.instagramviewer.Utils.UniversalImageLoader;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
     private static final int ACTIVITY_NUM = 4;
+    private static final int NUM_GRID_COLUMNS = 3;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -88,6 +94,7 @@ public class ProfileFragment extends Fragment {
         setupBottomNavigationView();
         setupToolbar();
         setupFirebaseAuth();
+        setupGridView();
 
         TextView editProfile = (TextView) view.findViewById(R.id.textEditProfile);
         editProfile.setOnClickListener(new View.OnClickListener() {
@@ -122,6 +129,41 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    private void setupGridView(){
+        Log.d(TAG, "setupGridView: setting up the image grid view on the profile screen");
+        final ArrayList<Photo> photos = new ArrayList<>();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        Query query = databaseReference.child(getString(R.string.dbname_user_photos))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    photos.add(singleSnapshot.getValue(Photo.class));
+                }
+                int gridWidth = getResources().getDisplayMetrics().widthPixels;
+                int imageWidth = gridWidth/NUM_GRID_COLUMNS;
+                //set up the image grid view
+                mGridView.setColumnWidth(imageWidth);
+
+                ArrayList<String> imgUrls = new ArrayList<String>();
+                for(int i = 0; i< photos.size();i++){
+                    imgUrls.add(photos.get(i).getImage_path());
+                }
+
+                Log.d(TAG, "onDataChange: the urls" + imgUrls);
+                GridImageAdapter adapter = new GridImageAdapter(getActivity(),
+                        R.layout.layout_grid_imageview,"",imgUrls);
+                mGridView.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: query cancelled");
+            }
+        });
+    }
 
     /**
      * Responsible for setting up the profile toolbar
