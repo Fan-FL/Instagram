@@ -9,8 +9,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -34,10 +39,13 @@ import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,6 +92,8 @@ public class CameraFragment extends Fragment {
     private TextView flashModeTextView;
     private int flashMode = 2;
 
+    private Paint paint = new Paint();
+
     private AutoFitTextureView mTextureView;
     /**
      * Orientation of the camera sensor
@@ -103,6 +113,7 @@ public class CameraFragment extends Fragment {
      * Whether the current camera device supports Flash or not.
      */
     private boolean mFlashSupported;
+    SurfaceView surfaceView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
@@ -112,6 +123,52 @@ public class CameraFragment extends Fragment {
         photoButton = (Button) view.findViewById(R.id.photoButton);
         flashModeButton = (Button) view.findViewById(R.id.flashModeButton);
         flashModeTextView = (TextView) view.findViewById(R.id.flashModeTextView);
+
+        surfaceView = (SurfaceView) view.findViewById(R.id.surfaceView);
+        surfaceView.setZOrderOnTop(true);
+        SurfaceHolder mHolder = surfaceView.getHolder();
+        mHolder.setFormat(PixelFormat.TRANSPARENT);
+        mHolder.addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                Canvas canvas = holder.lockCanvas();
+                if (canvas == null) {
+                    Log.e("CameraFragment", "Cannot draw onto the canvas as it's null");
+                } else {
+                    int screenWidth = mTextureView.getWidth() / 2;
+                    int screenHeight = mTextureView.getHeight() / 2;
+
+                    //  Set paint options
+                    paint.setAntiAlias(true);
+                    paint.setStrokeWidth(3);
+                    paint.setStyle(Paint.Style.STROKE);
+                    paint.setColor(Color.WHITE);
+
+                    int rectLen = 85;
+                    int rectSpace = 25;
+                    canvas.drawLine(screenWidth - rectLen, screenHeight - rectLen, screenWidth - rectSpace, screenHeight - rectLen, paint);
+                    canvas.drawLine(screenWidth - rectLen, screenHeight - rectLen, screenWidth - rectLen, screenHeight - rectSpace, paint);
+                    canvas.drawLine(screenWidth - rectLen, screenHeight + rectLen, screenWidth - rectLen, screenHeight + rectSpace, paint);
+                    canvas.drawLine(screenWidth - rectLen, screenHeight + rectLen, screenWidth - rectSpace, screenHeight + rectLen, paint);
+                    canvas.drawLine(screenWidth + rectLen, screenHeight - rectLen, screenWidth + rectSpace, screenHeight - rectLen, paint);
+                    canvas.drawLine(screenWidth + rectLen, screenHeight - rectLen, screenWidth + rectLen, screenHeight - rectSpace, paint);
+                    canvas.drawLine(screenWidth + rectLen, screenHeight + rectLen, screenWidth + rectLen, screenHeight + rectSpace, paint);
+                    canvas.drawLine(screenWidth + rectLen, screenHeight + rectLen, screenWidth + rectSpace, screenHeight + rectLen, paint);
+
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+
+            }
+        });
+
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,6 +201,13 @@ public class CameraFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private void drawContent(Canvas canvas){
+        //画内容
+        canvas.drawColor(Color.WHITE);
+        paint.setColor(Color.RED);
+        canvas.drawCircle(200,300,100,paint);
     }
 
     @Override
@@ -362,6 +426,13 @@ public class CameraFragment extends Fragment {
         SurfaceTexture mSurfaceTexture = mTextureView.getSurfaceTexture();
         mSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         Surface previewSurface = new Surface(mSurfaceTexture);
+//        Canvas canvas = previewSurface.lockHardwareCanvas();
+//        drawContent(canvas);
+//        previewSurface.unlockCanvasAndPost(canvas);
+
+//        Canvas canvas = mTextureView.lockCanvas();
+//        drawContent(canvas);
+//        mTextureView.unlockCanvasAndPost(canvas);
         try {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH);
@@ -387,7 +458,6 @@ public class CameraFragment extends Fragment {
             e.printStackTrace();
         }
     }
-
     private void lockFocus() {
         try {
             mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
@@ -559,4 +629,54 @@ public class CameraFragment extends Fragment {
         }
 
     }
+
+    private class CustomView extends ImageView {
+
+        private final Paint paint;
+//        private final SurfaceHolder mHolder;
+//        private final Context context;
+
+        public CustomView(CameraFragment context) {
+            super(context.getActivity().getBaseContext());
+//            mHolder = getHolder();
+//            mHolder.setFormat(PixelFormat.TRANSPARENT);
+//            this.context = context.getActivity().getBaseContext();
+            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setColor(Color.WHITE);
+            paint.setStyle(Paint.Style.STROKE);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+            canvas.drawColor(Color.TRANSPARENT);
+            canvas.drawCircle(mTextureView.getX()+mTextureView.getWidth()/2, mTextureView.getY()+mTextureView.getHeight()/2, 100, paint);
+        }
+    }
+
+//    private class CustomView extends SurfaceView {
+//
+//        private final Paint paint;
+//        private final SurfaceHolder mHolder;
+//        private final Context context;
+//
+//        public CustomView(CameraFragment context) {
+//            super(context.getActivity().getBaseContext());
+//            mHolder = getHolder();
+//            mHolder.setFormat(PixelFormat.TRANSPARENT);
+//            this.context = context.getActivity().getBaseContext();
+//            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+//            paint.setColor(Color.WHITE);
+//            paint.setStyle(Paint.Style.STROKE);
+//        }
+//
+//        @Override
+//        protected void onDraw(Canvas canvas) {
+//            super.onDraw(canvas);
+//            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+//            canvas.drawColor(Color.TRANSPARENT);
+//            canvas.drawCircle(mTextureView.getX()+mTextureView.getWidth()/2, mTextureView.getY()+mTextureView.getHeight()/2, 100, paint);
+//        }
+//    }
 }
