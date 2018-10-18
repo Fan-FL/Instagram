@@ -15,7 +15,7 @@
     <RelativeLayout
         android:id="@+id/control"
         android:layout_width="match_parent"
-        android:layout_height="168dp"
+        android:layout_height="112dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:background="@color/white">
@@ -27,11 +27,11 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:onClick="takePicture"
-            android:text="take photos" />
+            android:text="Picture" />
 
         <Button
             android:id="@+id/flashModeButton"
-            android:layout_width="64dp"
+            android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"

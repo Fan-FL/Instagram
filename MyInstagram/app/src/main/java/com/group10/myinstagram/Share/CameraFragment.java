@@ -2,7 +2,10 @@ package com.group10.myinstagram.Share;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -48,10 +51,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 public class CameraFragment extends Fragment {
@@ -204,7 +210,7 @@ public class CameraFragment extends Fragment {
                 // For still image captures, we use the largest available size.
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
-                        new Camera2BasicFragment.CompareSizesByArea());
+                        new CompareSizesByArea());
 
                 // Find out if we need to swap dimension to get the preview size relative to sensor
                 // coordinate.
@@ -281,7 +287,7 @@ public class CameraFragment extends Fragment {
         } catch (NullPointerException e) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
             // device this code runs.
-            Camera2BasicFragment.ErrorDialog.newInstance(getString(R.string.camera_error))
+            ErrorDialog.newInstance(getString(R.string.camera_error))
                     .show(getChildFragmentManager(), "dialog");
         }
 
@@ -311,9 +317,9 @@ public class CameraFragment extends Fragment {
         // Pick the smallest of those big enough. If there is no one big enough, pick the
         // largest of those not big enough.
         if (bigEnough.size() > 0) {
-            return Collections.min(bigEnough, new Camera2BasicFragment.CompareSizesByArea());
+            return Collections.min(bigEnough, new CompareSizesByArea());
         } else if (notBigEnough.size() > 0) {
-            return Collections.max(notBigEnough, new Camera2BasicFragment.CompareSizesByArea());
+            return Collections.max(notBigEnough, new CompareSizesByArea());
         } else {
             Log.e("CameraFragment", "Couldn't find any suitable preview size");
             return choices[0];
@@ -491,7 +497,7 @@ public class CameraFragment extends Fragment {
                 File file = new File(fileName);
                 Uri uri = Uri.fromFile(file);
                 CameraFragment.this.getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-                Intent intent = new Intent(CameraFragment.this.getActivity(), NextActivity.class);
+                Intent intent = new Intent(CameraFragment.this.getActivity(), GalleryPhotoEditorActivity.class);
                 intent.putExtra(getString(R.string.selected_image), fileName);
                 startActivity(intent);
             } catch (IOException e) {
@@ -506,5 +512,51 @@ public class CameraFragment extends Fragment {
                 }
             }
         }
+    }
+
+    /**
+     * Compares two {@code Size}s based on their areas.
+     */
+    static class CompareSizesByArea implements Comparator<Size> {
+
+        @Override
+        public int compare(Size lhs, Size rhs) {
+            // We cast here to ensure the multiplications won't overflow
+            return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
+                    (long) rhs.getWidth() * rhs.getHeight());
+        }
+
+    }
+
+    /**
+     * Shows an error message dialog.
+     */
+    public static class ErrorDialog extends DialogFragment {
+
+        private static final String ARG_MESSAGE = "message";
+
+        public static ErrorDialog newInstance(String message) {
+            ErrorDialog dialog = new ErrorDialog();
+            Bundle args = new Bundle();
+            args.putString(ARG_MESSAGE, message);
+            dialog.setArguments(args);
+            return dialog;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Activity activity = getActivity();
+            return new AlertDialog.Builder(activity)
+                    .setMessage(getArguments().getString(ARG_MESSAGE))
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            activity.finish();
+                        }
+                    })
+                    .create();
+        }
+
     }
 }
