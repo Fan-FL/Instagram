@@ -1,6 +1,10 @@
 package com.group10.myinstagram.Models;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class User implements Parcelable {
+
     private String user_id;
     private long phone_number;
     private String email;
@@ -16,6 +20,26 @@ public class User {
     public User() {
 
     }
+
+
+    protected User(Parcel in) {
+        user_id = in.readString();
+        phone_number = in.readLong();
+        email = in.readString();
+        username = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getUser_id() {
         return user_id;
@@ -49,6 +73,7 @@ public class User {
         this.username = username;
     }
 
+
     @Override
     public String toString() {
         return "User{" +
@@ -57,5 +82,18 @@ public class User {
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(user_id);
+        dest.writeLong(phone_number);
+        dest.writeString(email);
+        dest.writeString(username);
     }
 }
