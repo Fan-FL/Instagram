@@ -130,15 +130,17 @@ public class FirebaseMethods {
     }
 
     /*
-     * Add information to the users node
-     * Add information to the user account settings
+     * Add information to the users nodes
+     * Add information to the user_account_settings node
      */
     public void addNewUser(String email, String username, String description, String website, String profile_photo){
-        User user = new User(userID, 1, email, StringManipulation.condenseUsername(username));
+
+        User user = new User( userID,  1,  email,  StringManipulation.condenseUsername(username) );
 
         myReference.child(mContext.getString(R.string.dbname_users))
                 .child(userID)
                 .setValue(user);
+
 
         UserAccountSettings settings = new UserAccountSettings(
                 description,
@@ -148,11 +150,14 @@ public class FirebaseMethods {
                 0,
                 profile_photo,
                 StringManipulation.condenseUsername(username),
-                website
+                website,
+                userID
         );
+
         myReference.child(mContext.getString(R.string.dbname_user_account_settings))
                 .child(userID)
                 .setValue(settings);
+
     }
 
     /*
