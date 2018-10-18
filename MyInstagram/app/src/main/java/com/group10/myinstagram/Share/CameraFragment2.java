@@ -1,13 +1,10 @@
 package com.group10.myinstagram.Share;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.ImageFormat;
-import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -26,7 +23,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -48,13 +44,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-public class CameraFragment extends Fragment {
+public class CameraFragment2 extends Fragment {
     private static final SparseIntArray ORIENTATION = new SparseIntArray();
 
     static {
@@ -66,9 +63,11 @@ public class CameraFragment extends Fragment {
 
     private String mCameraId;
     private Size mPreviewSize;
+    private Size mCaptureSize;
     private HandlerThread mCameraThread;
     private Handler mCameraHandler;
     private CameraDevice mCameraDevice;
+    private TextureView mTextureView;
     private ImageReader mImageReader;
     private CaptureRequest.Builder mCaptureRequestBuilder;
     private CaptureRequest mCaptureRequest;
@@ -78,31 +77,11 @@ public class CameraFragment extends Fragment {
     private TextView flashModeTextView;
     private int flashMode = 2;
 
-    private AutoFitTextureView mTextureView;
-    /**
-     * Orientation of the camera sensor
-     */
-    private int mSensorOrientation;
-    /**
-     * Max preview width that is guaranteed by Camera2 API
-     */
-    private static final int MAX_PREVIEW_WIDTH = 1920;
-
-    /**
-     * Max preview height that is guaranteed by Camera2 API
-     */
-    private static final int MAX_PREVIEW_HEIGHT = 1080;
-
-    /**
-     * Whether the current camera device supports Flash or not.
-     */
-    private boolean mFlashSupported;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
         View view = inflater.inflate(R.layout.fragment_photo_camera,container,false);
 
-        mTextureView = (AutoFitTextureView) view.findViewById(R.id.textureView);
+        mTextureView = (TextureView) view.findViewById(R.id.textureView);
         photoButton = (Button) view.findViewById(R.id.photoButton);
         flashModeButton = (Button) view.findViewById(R.id.flashModeButton);
         flashModeTextView = (TextView) view.findViewById(R.id.flashModeTextView);
@@ -182,143 +161,65 @@ public class CameraFragment extends Fragment {
     };
 
     private void setupCamera(int width, int height) {
-        Activity activity = getActivity();
-        CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+        //获取摄像头的管理者CameraManager
+        CameraManager manager = (CameraManager) getContext().getSystemService(Context.CAMERA_SERVICE);
         try {
+            //遍历所有摄像头
             for (String cameraId : manager.getCameraIdList()) {
-                CameraCharacteristics characteristics
-                        = manager.getCameraCharacteristics(cameraId);
-
-                // We don't use a front facing camera in this sample.
+                CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
+
+                //此处默认打开后置摄像头
+                if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT)
                     continue;
-                }
 
-                StreamConfigurationMap map = characteristics.get(
-                        CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                if (map == null) {
-                    continue;
-                }
-
-                // For still image captures, we use the largest available size.
-                Size largest = Collections.max(
-                        Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
-                        new Camera2BasicFragment.CompareSizesByArea());
-
-                // Find out if we need to swap dimension to get the preview size relative to sensor
-                // coordinate.
-                int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-                //noinspection ConstantConditions
-                mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-                boolean swappedDimensions = false;
-                switch (displayRotation) {
-                    case Surface.ROTATION_0:
-                    case Surface.ROTATION_180:
-                        if (mSensorOrientation == 90 || mSensorOrientation == 270) {
-                            swappedDimensions = true;
-                        }
-                        break;
-                    case Surface.ROTATION_90:
-                    case Surface.ROTATION_270:
-                        if (mSensorOrientation == 0 || mSensorOrientation == 180) {
-                            swappedDimensions = true;
-                        }
-                        break;
-                    default:
-                        Log.e("CameraFragment", "Display rotation is invalid: " + displayRotation);
-                }
-
-                Point displaySize = new Point();
-                activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
-                int rotatedPreviewWidth = width;
-                int rotatedPreviewHeight = height;
-                int maxPreviewWidth = displaySize.x;
-                int maxPreviewHeight = displaySize.y;
-
-                if (swappedDimensions) {
-                    rotatedPreviewWidth = height;
-                    rotatedPreviewHeight = width;
-                    maxPreviewWidth = displaySize.y;
-                    maxPreviewHeight = displaySize.x;
-                }
-
-                if (maxPreviewWidth > MAX_PREVIEW_WIDTH) {
-                    maxPreviewWidth = MAX_PREVIEW_WIDTH;
-                }
-
-                if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
-                    maxPreviewHeight = MAX_PREVIEW_HEIGHT;
-                }
-
-                // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
-                // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
-                // garbage capture data.
-                mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
-                        rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
-                        maxPreviewHeight, largest);
-
-                // We fit the aspect ratio of TextureView to the size of preview we picked.
-                int orientation = getResources().getConfiguration().orientation;
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    mTextureView.setAspectRatio(
-                            mPreviewSize.getWidth(), mPreviewSize.getHeight());
-                } else {
-                    mTextureView.setAspectRatio(
-                            mPreviewSize.getHeight(), mPreviewSize.getWidth());
-                }
-
-                // Check if the flash is supported.
-                Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-                mFlashSupported = available == null ? false : available;
-
+                //获取StreamConfigurationMap，它是管理摄像头支持的所有输出格式和尺寸
+                StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+                assert map != null;
+                //根据TextureView的尺寸设置预览尺寸
+                mPreviewSize = getOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height);
+                //获取相机支持的最大拍照尺寸
+                mCaptureSize = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new Comparator<Size>() {
+                    @Override
+                    public int compare(Size lhs, Size rhs) {
+                        return Long.signum(lhs.getWidth() * lhs.getHeight() - rhs.getHeight() * rhs.getWidth());
+                    }
+                });
+                //此ImageReader用于拍照所需
                 setupImageReader();
                 mCameraId = cameraId;
-                return;
+                break;
             }
         } catch (CameraAccessException e) {
             e.printStackTrace();
-        } catch (NullPointerException e) {
-            // Currently an NPE is thrown when the Camera2API is used but not supported on the
-            // device this code runs.
-            Camera2BasicFragment.ErrorDialog.newInstance(getString(R.string.camera_error))
-                    .show(getChildFragmentManager(), "dialog");
         }
-
     }
 
-    private static Size chooseOptimalSize(Size[] choices, int textureViewWidth,
-                                          int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
-
-        // Collect the supported resolutions that are at least as big as the preview Surface
-        List<Size> bigEnough = new ArrayList<>();
-        // Collect the supported resolutions that are smaller than the preview Surface
-        List<Size> notBigEnough = new ArrayList<>();
-        int w = aspectRatio.getWidth();
-        int h = aspectRatio.getHeight();
-        for (Size option : choices) {
-            if (option.getWidth() <= maxWidth && option.getHeight() <= maxHeight &&
-                    option.getHeight() == option.getWidth() * h / w) {
-                if (option.getWidth() >= textureViewWidth &&
-                        option.getHeight() >= textureViewHeight) {
-                    bigEnough.add(option);
-                } else {
-                    notBigEnough.add(option);
+    //选择sizeMap中大于并且最接近width和height的size
+    private Size getOptimalSize(Size[] sizeMap, int width, int height) {
+        List<Size> sizeList = new ArrayList<>();
+        for (Size option : sizeMap) {
+            if (width > height) {
+                if (option.getWidth() > width && option.getHeight() > height) {
+                    sizeList.add(option);
+                }
+            } else {
+                if (option.getWidth() > height && option.getHeight() > width) {
+                    sizeList.add(option);
                 }
             }
         }
-
-        // Pick the smallest of those big enough. If there is no one big enough, pick the
-        // largest of those not big enough.
-        if (bigEnough.size() > 0) {
-            return Collections.min(bigEnough, new Camera2BasicFragment.CompareSizesByArea());
-        } else if (notBigEnough.size() > 0) {
-            return Collections.max(notBigEnough, new Camera2BasicFragment.CompareSizesByArea());
-        } else {
-            Log.e("CameraFragment", "Couldn't find any suitable preview size");
-            return choices[0];
+        if (sizeList.size() > 0) {
+            return Collections.min(sizeList, new Comparator<Size>() {
+                @Override
+                public int compare(Size lhs, Size rhs) {
+                    return Long.signum(lhs.getWidth() * lhs.getHeight() - rhs.getWidth() * rhs.getHeight());
+                }
+            });
         }
+        return sizeMap[0];
     }
+
 
     private void openCamera() {
         CameraManager manager = (CameraManager) getContext().getSystemService(Context.CAMERA_SERVICE);
@@ -454,7 +355,7 @@ public class CameraFragment extends Fragment {
 
     private void setupImageReader() {
         //2代表ImageReader中最多可以获取两帧图像流
-        mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(),
+        mImageReader = ImageReader.newInstance(mCaptureSize.getWidth(), mCaptureSize.getHeight(),
                 ImageFormat.JPEG, 2);
         mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
             @Override
@@ -490,8 +391,8 @@ public class CameraFragment extends Fragment {
                 fos.write(data, 0, data.length);
                 File file = new File(fileName);
                 Uri uri = Uri.fromFile(file);
-                CameraFragment.this.getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-                Intent intent = new Intent(CameraFragment.this.getActivity(), NextActivity.class);
+                CameraFragment2.this.getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+                Intent intent = new Intent(CameraFragment2.this.getActivity(), NextActivity.class);
                 intent.putExtra(getString(R.string.selected_image), fileName);
                 startActivity(intent);
             } catch (IOException e) {

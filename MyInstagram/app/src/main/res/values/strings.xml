@@ -55,6 +55,10 @@
     <string name="Brightness">Brightness</string>
     <string name="Contrast">Contrast</string>
     <string name="brightness_contrast">Brightness_contrast</string>
+    <string name="picture">take</string>
+    <string name="description_info">Info</string>
+    <string name="request_permission">Needs camera permission.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
 
 
 </resources>
