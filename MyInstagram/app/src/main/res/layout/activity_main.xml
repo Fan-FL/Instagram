@@ -29,14 +29,18 @@
             android:layout_below="@id/relLayout1"
             android:background="@color/white">
 
-            <include layout="@layout/layout_center_viewer"/>
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/listView"></ListView>
 
         </RelativeLayout>
 
         <!-- Bottom navigation Section -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@id/relLayout2">
 
             <include layout="@layout/layout_navigation"/>
         </RelativeLayout>
