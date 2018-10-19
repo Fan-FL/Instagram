@@ -26,7 +26,7 @@
         <activity android:name=".Share.ShareActivity"></activity>
         <activity android:name=".Notification.NotificationActivity"></activity>
         <activity android:name=".Profile.ProfileActivity"></activity>
-        <activity android:name=".Bluetooth.BluetoothActivity"></activity>
+        <activity android:name=".Bluetooth.SendPhotoActivity"></activity>
     </application>
 
 </manifest>
