@@ -4,13 +4,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.group10.myinstagram.R;
-import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
 import com.group10.myinstagram.Utils.Permissions;
 import com.group10.myinstagram.Utils.SectionPagerAdapter;
 
@@ -42,7 +38,6 @@ public class ShareActivity extends AppCompatActivity {
             verifyPermissions(Permissions.PERMISSIONS);
         }
 
-        setupBottomNavigationView();
     }
 
     /**
@@ -122,19 +117,5 @@ public class ShareActivity extends AppCompatActivity {
             Log.d(TAG, "checkPermission: checkPermissions: Permission was granted for: ");
             return true;
         }
-    }
-
-
-    /**
-     * BottomNavigationView setup
-     */
-    private void setupBottomNavigationView(){
-        Log.d(TAG,"setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationView);
-
-        Menu menu = bottomNavigationView.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
     }
 }
