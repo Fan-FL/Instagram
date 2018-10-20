@@ -86,6 +86,17 @@ public class NextActivity extends AppCompatActivity {
         });
 
         setImage();
+
+        TextView bluetoothShare = (TextView) findViewById(R.id.bluetoothshare);
+        bluetoothShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: bluetooth share");
+                Intent intent = new Intent(NextActivity.this, GalleryPhotoEditorActivity.class);
+                intent.putExtra(getString(R.string.selected_image), imgUrl);
+                startActivity(intent);
+            }
+        });
     }
 
 

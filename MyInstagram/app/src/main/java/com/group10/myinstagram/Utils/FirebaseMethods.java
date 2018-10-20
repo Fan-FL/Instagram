@@ -335,7 +335,7 @@ public class FirebaseMethods {
             Log.d(TAG, "uploadNewPhoto: upload new photo");
             String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
             final StorageReference storageReference = mStorageReference
-                    .child(filePath.FIREBASE_IMAGE_STORAGE+"/" + user_id + "/photo"+(imageCount+1));
+                    .child(filePath.FIREBASE_IMAGE_STORAGE+"/" + user_id + "/"+ System.currentTimeMillis());
 
             // use the bitmap to convert the image to bitmap
             if(bitmap == null){
