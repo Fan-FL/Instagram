@@ -83,6 +83,7 @@
     <string name="request_permission">Needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="selected_bitmap">selected_bitmap</string>
+    <string name="bluetooth_share">BT share</string>
 
 
 </resources>
