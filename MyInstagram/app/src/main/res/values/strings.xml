@@ -22,6 +22,7 @@
     <string name="dbname_photos">photos</string>
     <string name="dbname_following">following</string>
     <string name="dbname_followers">followers</string>
+    <string name="dbname_notification">notification</string>
 
     <string name="field_username">username</string>
     <string name="field_email">email</string>
