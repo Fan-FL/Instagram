@@ -123,8 +123,6 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
         //set the comment
         List<Comment> comments = getItem(position).getComments();
         holder.comments.setText("View all " + comments.size() + " comments");
-        /**
-         * TODO: click listener for comments
         holder.comments.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,7 +135,6 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
 
             }
         });
-         */
 
         //set the time it was posted
         // TODO: show minutes difference
@@ -159,6 +156,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                 .child(mContext.getString(R.string.dbname_user_account_settings))
                 .orderByChild(mContext.getString(R.string.field_user_id))
                 .equalTo(getItem(position).getUser_id());
+        Log.d(TAG, "position: " + position + " getView: user id: " + getItem(position).getUser_id());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -166,7 +164,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
 
                     // currentUsername = singleSnapshot.getValue(UserAccountSettings.class).getUsername();
 
-                    Log.d(TAG, "onDataChange: found user: "
+                    Log.d(TAG, "onDataChange: user profile found user: "
                             + singleSnapshot.getValue(UserAccountSettings.class).getUsername());
 
                     holder.username.setText(singleSnapshot.getValue(UserAccountSettings.class).getUsername());
@@ -204,8 +202,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                         }
                     });*/
 
-                    /**
-                     * TODO: click listener for comments
+
                     holder.settings = singleSnapshot.getValue(UserAccountSettings.class);
                     holder.comment.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -216,7 +213,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                             //another thing?
                             ((MainActivity)mContext).hideLayout();
                         }
-                    });*/
+                    });
                 }
 
             }
@@ -236,7 +233,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found user: " +
+                    Log.d(TAG, "onDataChange: user object found user: " +
                             singleSnapshot.getValue(User.class).getUsername());
 
                     holder.user = singleSnapshot.getValue(User.class);

@@ -60,6 +60,9 @@
     <string name="profile_activity">Profile Activity</string>
     <string name="main_activity">Main Activity</string>
 
+    <!-- fragment names -->
+    <string name="view_comments_fragment">View Comments</string>
+
     <!-- Strings -->
     <string name="gallery">GALLERY</string>
     <string name="photo">PHOTO</string>
