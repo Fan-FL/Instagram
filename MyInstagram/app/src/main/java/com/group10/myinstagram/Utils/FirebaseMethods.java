@@ -314,7 +314,7 @@ public class FirebaseMethods {
         String newPhotoKey = myReference.child(mContext.getString(R.string.dbname_photos)).push().getKey();
         Photo photo = new Photo();
         photo.setCaption(caption);
-        photo.setData_created(getTimeStamp());
+        photo.setDate_created(getTimeStamp());
         photo.setImage_path(url);
         photo.setPhoto_id(newPhotoKey);
         photo.setTags(tags);

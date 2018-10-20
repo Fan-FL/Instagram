@@ -8,7 +8,7 @@ import java.util.List;
 public class Photo implements Parcelable {
 
     private String caption;
-    private String date_created;
+    private String data_created;
     private String image_path;
     private String photo_id;
     private String user_id;
@@ -24,7 +24,7 @@ public class Photo implements Parcelable {
     public Photo(String caption, String date_created, String image_path, String photo_id,
                  String user_id, String tags, List<Like> likes, List<Comment> comments) {
         this.caption = caption;
-        this.date_created = date_created;
+        this.data_created = date_created;
         this.image_path = image_path;
         this.photo_id = photo_id;
         this.user_id = user_id;
@@ -35,7 +35,7 @@ public class Photo implements Parcelable {
 
     protected Photo(Parcel in) {
         caption = in.readString();
-        date_created = in.readString();
+        data_created = in.readString();
         image_path = in.readString();
         photo_id = in.readString();
         user_id = in.readString();
@@ -45,7 +45,7 @@ public class Photo implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(caption);
-        dest.writeString(date_created);
+        dest.writeString(data_created);
         dest.writeString(image_path);
         dest.writeString(photo_id);
         dest.writeString(user_id);
@@ -90,11 +90,11 @@ public class Photo implements Parcelable {
     }
 
     public String getDate_created() {
-        return date_created;
+        return data_created;
     }
 
     public void setDate_created(String date_created) {
-        this.date_created = date_created;
+        this.data_created = date_created;
     }
 
     public String getImage_path() {
@@ -141,7 +141,7 @@ public class Photo implements Parcelable {
     public String toString() {
         return "Photo{" +
                 "caption='" + caption + '\'' +
-                ", date_created='" + date_created + '\'' +
+                ", date_created='" + data_created + '\'' +
                 ", image_path='" + image_path + '\'' +
                 ", photo_id='" + photo_id + '\'' +
                 ", user_id='" + user_id + '\'' +
