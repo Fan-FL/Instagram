@@ -43,12 +43,6 @@ public class ProfileActivity extends AppCompatActivity {
         Log.d(TAG,"onCreate: started");
         init();
         setupBottomNavigationView();
-//        setupBottomNavigationView();
-//        setupToolbar();
-        // setupActivityWidgets();
-        //setProfileImage();
-
-        //tempGridSetup();
     }
 
     private void init(){

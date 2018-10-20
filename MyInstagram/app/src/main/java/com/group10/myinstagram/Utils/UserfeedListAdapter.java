@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.group10.myinstagram.Main.MainActivity;
 import com.group10.myinstagram.Models.Comment;
 import com.group10.myinstagram.Models.Like;
+import com.group10.myinstagram.Models.Notification;
 import com.group10.myinstagram.Models.Photo;
 import com.group10.myinstagram.Models.User;
 import com.group10.myinstagram.Models.UserAccountSettings;
@@ -40,6 +41,7 @@ import java.util.TimeZone;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserfeedListAdapter extends ArrayAdapter<Photo> {
@@ -332,6 +334,19 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
     private void addNewLike(final ViewHolder holder, Photo photo){
         Log.d(TAG, "addNewLike: adding new like");
 
+        Notification notification = new Notification();
+        notification.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        notification.setAction(mContext.getString(R.string.action_like));
+        notification.setCreate_time(getTimestamp());
+        notification.setImage_path(photo.getImage_path());
+        String newNotificationID = FirebaseDatabase.getInstance().getReference().push().getKey();
+
+        FirebaseDatabase.getInstance().getReference()
+                .child(mContext.getString(R.string.dbname_notification))
+                .child(photo.getUser_id())
+                .child(newNotificationID)
+                .setValue(notification);
+
         String newLikeID = mReference.push().getKey();
         Like like = new Like();
         like.setUsername(currentUsername);
@@ -356,6 +371,12 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
 
         holder.heart.toggleLike();
         getLikesString(holder, photo);
+    }
+
+    private String getTimestamp(){
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("Australia/Sydney"));
+        return sdf.format(new java.util.Date());
     }
 
     private void getCurrentUsername(){
