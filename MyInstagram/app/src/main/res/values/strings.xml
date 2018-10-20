@@ -55,10 +55,12 @@
 
     <!-- Intent Extras -->
     <string name="calling_activity">Calling Activity</string>
+    <string name="intent_user">intent_user</string>
 
     <!-- Activity -->
     <string name="profile_activity">Profile Activity</string>
     <string name="main_activity">Main Activity</string>
+    <string name="search_activity">Search Activity</string>
 
     <!-- fragment names -->
     <string name="view_comments_fragment">View Comments</string>
