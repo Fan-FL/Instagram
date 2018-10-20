@@ -17,6 +17,7 @@ import android.widget.Button;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.group10.myinstagram.Bluetooth.ReceivePhotoActivity;
 import com.group10.myinstagram.Bluetooth.SendPhotoActivity;
 import com.group10.myinstagram.Login.LoginActivity;
 import com.group10.myinstagram.R;
@@ -45,6 +46,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "onClick: find pair.");
                 Intent intent = new Intent(mContext, SendPhotoActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button btnReceivePhoto = (Button) findViewById(R.id.btn_receive_photo);
+
+        btnReceivePhoto.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: receive photo.");
+                Intent intent = new Intent(mContext, ReceivePhotoActivity.class);
                 startActivity(intent);
             }
         });
