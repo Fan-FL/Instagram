@@ -38,6 +38,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity android:name=".Bluetooth.SendPhotoActivity"></activity>
+        <activity android:name=".Bluetooth.ReceivePhotoActivity"></activity>
     </application>
 
 </manifest>
