@@ -78,8 +78,18 @@ public class NotificationListAdapter extends ArrayAdapter<Notification> {
             holder = (NotificationListAdapter.ViewHolder) convertView.getTag();
         }
 
-        //set the comment
-        holder.notification.setText(getItem(position).getAction());
+        //set the notification
+        String action = getItem(position).getAction();
+        if (action.equals("like")) {
+            holder.notification.setText("liked your photo.");
+            ImageLoader imageLoader = ImageLoader.getInstance();
+            imageLoader.displayImage(
+                    getItem(position).getImage_path(),
+                    holder.image);
+        } else if (action.equals("follow")){
+            holder.notification.setText("started following you.");
+            holder.image.setVisibility(View.GONE);
+        }
 
         //set the timestamp difference
         String timestampDifference = getTimestampDifference(getItem(position));
