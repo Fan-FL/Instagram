@@ -22,7 +22,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.group10.myinstagram.Login.LoginActivity;
 import com.group10.myinstagram.Models.Comment;
+import com.group10.myinstagram.Models.Like;
 import com.group10.myinstagram.Models.Photo;
+import com.group10.myinstagram.Models.UserAccountSettings;
 import com.group10.myinstagram.R;
 import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
 import com.group10.myinstagram.Utils.UniversalImageLoader;
@@ -61,8 +63,6 @@ public class MainActivity extends AppCompatActivity {
         mListView = (ListView) findViewById(R.id.listView);
         mFollowing = new ArrayList<>();
         mPhotos = new ArrayList<>();
-
-        getFollowing();
     }
 
     private void initImageLoader(){
@@ -86,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
                     mFollowing.add(singleSnapshot.child(getString(R.string.field_user_id)).getValue().toString());
                 }
+                //add current user to post view
+                mFollowing.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 //get the photos
                 getPhotos();
             }
@@ -121,6 +123,17 @@ public class MainActivity extends AppCompatActivity {
                         photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
                         photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
                         photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+
+                        ArrayList<Like> likes = new ArrayList<Like>();
+                        for (DataSnapshot dSnapshot : singleSnapshot
+                                .child(getString(R.string.field_likes)).getChildren()){
+                            Log.d(TAG, "onDataChange: main activity: load likes:" +
+                                    dSnapshot.getValue(Like.class).getUsername());
+                            Like like = new Like();
+                            like.setUsername(dSnapshot.getValue(Like.class).getUsername());
+                            likes.add(like);
+                        }
+                        photo.setLikes(likes);
 
                         ArrayList<Comment> comments = new ArrayList<Comment>();
                         for (DataSnapshot dSnapshot : singleSnapshot
@@ -201,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //check if the user is logged in
                 checkCurrentUser(user);
+                getFollowing();
                 if(user != null){
                     Log.d(TAG, "onAuthStateChanged: signed_in: "+ user.getUid());
                 }else {

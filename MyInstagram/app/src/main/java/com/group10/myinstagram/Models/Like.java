@@ -1,29 +1,46 @@
 package com.group10.myinstagram.Models;
 
+import android.util.Log;
+
 public class Like {
+    private static final String TAG = "Like";
 
-    private String user_id;
+    private String username;
 
-    public Like(String user_id) {
-        this.user_id = user_id;
+    public Like(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Like() {
 
     }
 
-    public String getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
-    }
-
     @Override
     public String toString() {
         return "Like{" +
-                "user_id='" + user_id + '\'' +
+                "username='" + username + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Like other = (Like) obj;
+        if (! username.equals(other.username))
+            return false;
+        return true;
     }
 }
