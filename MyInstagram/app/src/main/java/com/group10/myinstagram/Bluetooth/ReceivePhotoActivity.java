@@ -17,7 +17,7 @@ public class ReceivePhotoActivity extends AppCompatActivity {
     /**
      * Member object for the chat services
      */
-    private BluetoothChatService mChatService = null;
+    private BluetoothService mChatService = null;
 
     /**
      * Name of the connected device
@@ -26,7 +26,7 @@ public class ReceivePhotoActivity extends AppCompatActivity {
 
 
     /**
-     * The Handler that gets information back from the BluetoothChatService
+     * The Handler that gets information back from the BluetoothService
      */
     private final Handler mHandler = new Handler() {
         @Override
@@ -36,14 +36,14 @@ public class ReceivePhotoActivity extends AppCompatActivity {
                 case Constants.MESSAGE_STATE_CHANGE:
                     Log.d(TAG, "state change");
                     switch (msg.arg1) {
-                        case BluetoothChatService.STATE_CONNECTED:
+                        case BluetoothService.STATE_CONNECTED:
                             setStatus(R.string.title_connected_to + mConnectedDeviceName);
                             break;
-                        case BluetoothChatService.STATE_CONNECTING:
+                        case BluetoothService.STATE_CONNECTING:
                             setStatus(R.string.title_connecting);
                             break;
-                        case BluetoothChatService.STATE_LISTEN:
-                        case BluetoothChatService.STATE_NONE:
+                        case BluetoothService.STATE_LISTEN:
+                        case BluetoothService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
                             break;
                     }
@@ -82,8 +82,8 @@ public class ReceivePhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_in_range);
 
         if (mChatService == null) {
-            // Initialize the BluetoothChatService to perform bluetooth connections
-            mChatService = new BluetoothChatService(ReceivePhotoActivity.this, mHandler);
+            // Initialize the BluetoothService to perform bluetooth connections
+            mChatService = new BluetoothService(ReceivePhotoActivity.this, mHandler);
 
             // Initialize the buffer for outgoing messages
 //            mOutStringBuffer = new StringBuffer("");
@@ -110,7 +110,7 @@ public class ReceivePhotoActivity extends AppCompatActivity {
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
         if (mChatService != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
+            if (mChatService.getState() == BluetoothService.STATE_NONE) {
                 // Start the Bluetooth chat services
                 mChatService.start();
             }

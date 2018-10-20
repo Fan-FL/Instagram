@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.group10.myinstagram.Bluetooth.SendPhotoActivity;
 import com.group10.myinstagram.R;
 import com.group10.myinstagram.Utils.FirebaseMethods;
 import com.group10.myinstagram.Utils.UniversalImageLoader;
@@ -86,6 +87,23 @@ public class NextActivity extends AppCompatActivity {
         });
 
         setImage();
+
+        TextView bluetoothShare = (TextView) findViewById(R.id.bluetoothshare);
+        bluetoothShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: share photo via bluetooth");
+                Intent intent = new Intent(NextActivity.this, SendPhotoActivity.class);
+
+                if (intent.hasExtra(getString(R.string.selected_image))) {
+                    imgUrl = intent.getStringExtra(getString(R.string.selected_image));
+                }
+                Log.d(TAG, "send image via bluetooth:"+ imgUrl);
+                intent.putExtra(getString(R.string.selected_image), imgUrl);
+
+                startActivity(intent);
+            }
+        });
     }
 
 

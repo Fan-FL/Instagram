@@ -144,15 +144,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnReceivePhoto = (Button) findViewById(R.id.btn_receive_photo);
-
-        btnReceivePhoto.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: receive photo.");
-                Intent intent = new Intent(mContext, ReceivePhotoActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     private void getPhotos(){

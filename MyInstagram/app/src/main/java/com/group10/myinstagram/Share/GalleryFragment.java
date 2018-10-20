@@ -97,6 +97,13 @@ public class GalleryFragment extends Fragment {
             directories.addAll(pathArray);
         }
 
+        //check for other folder inside "/storage/emulated/0/bluetooth"
+
+        pathArray = FileSearch.getDirectoryPaths(filePath.BLUETOOTH);
+        if (pathArray != null){
+            directories.addAll(pathArray);
+        }
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item,directories){
             @Override

@@ -1,8 +1,6 @@
 package com.group10.myinstagram.Bluetooth;
 
 import android.Manifest;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -10,21 +8,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.group10.myinstagram.R;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +37,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 public class SendPhotoActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     private String TAG = "Send Photo Activity";
@@ -42,10 +45,14 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
     public DeviceListAdapter mDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     ListView newDevices;
+    private Intent intent;
+    private String imgUrl;
     /**
      * Name of the connected device
      */
     private String mConnectedDeviceName = null;
+    String imageString = "";
+    int count = 0;
 
     //bluetooth
 //    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 1;
@@ -64,7 +71,7 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
     };
 
     /**
-     * The Handler that gets information back from the BluetoothChatService
+     * The Handler that gets information back from the BluetoothService
      */
     private final Handler mHandler = new Handler() {
         @Override
@@ -74,14 +81,15 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
                 case Constants.MESSAGE_STATE_CHANGE:
                     Log.d(TAG, "state change");
                     switch (msg.arg1) {
-                        case BluetoothChatService.STATE_CONNECTED:
-                            setStatus(R.string.title_connected_to + mConnectedDeviceName);
+                        case BluetoothService.STATE_CONNECTED:
+                            String status= "connected to " + mConnectedDeviceName;
+                            setStatus(status);
                             break;
-                        case BluetoothChatService.STATE_CONNECTING:
+                        case BluetoothService.STATE_CONNECTING:
                             setStatus(R.string.title_connecting);
                             break;
-                        case BluetoothChatService.STATE_LISTEN:
-                        case BluetoothChatService.STATE_NONE:
+                        case BluetoothService.STATE_LISTEN:
+                        case BluetoothService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
                             break;
                     }
@@ -103,9 +111,19 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
                     break;
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
+                    int bytes = msg.arg1;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
+                    imageString = imageString + readMessage;
                     Log.d(TAG, "read message: "+readMessage);
+                    Log.d(TAG, "allMessage: " + imageString);
+                    Log.d(TAG, "message size:" + imageString.length());
+//                    if (readMessage.equals("SendingFinished")){
+//                        ImageView imageView = (ImageView) findViewById(R.id.imageShare);
+//                        byte[] decodedString = Base64.decode(imageString.getBytes(), Base64.DEFAULT);
+//                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//                        imageView.setImageBitmap(bitmap);
+//                    }
                     break;
                 default:
                     break;
@@ -117,7 +135,7 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
     /**
      * Member object for the chat services
      */
-    private BluetoothChatService mChatService = null;
+    private BluetoothService mChatService = null;
     /**
      * String buffer for outgoing messages
      */
@@ -180,11 +198,11 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
 
         startBluetoothSensor();
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        newDevices = (ListView) findViewById(R.id.newDevices);
-        newDevices.setOnItemClickListener(SendPhotoActivity.this );
-//        mBTDevices = new ArrayList<>();
-        scanDevices();
+//        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//        newDevices = (ListView) findViewById(R.id.newDevices);
+//        newDevices.setOnItemClickListener(SendPhotoActivity.this );
+////        mBTDevices = new ArrayList<>();
+//        scanDevices();
 
         Button btnScanDevices = (Button) findViewById(R.id.btn_scan_devices);
 
@@ -201,10 +219,27 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
         btnSendMessage.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
                 Log.d(TAG, "onClick: send messages");
-                sendMessage("aaasaaaaaaaaaaa");
+//                sendMessage(getPhoto());
+                try {
+                    sendPhoto();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // If BT is not on, request that it be enabled.
+        // setupChat() will then be called during onActivityResult
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        newDevices = (ListView) findViewById(R.id.newDevices);
+        newDevices.setOnItemClickListener(SendPhotoActivity.this );
+//        mBTDevices = new ArrayList<>();
+        scanDevices();
     }
 
     @Override
@@ -228,7 +263,7 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
         if (mChatService != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
+            if (mChatService.getState() == BluetoothService.STATE_NONE) {
                 // Start the Bluetooth chat services
                 mChatService.start();
             }
@@ -327,8 +362,8 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
 //        }
 
         if (mChatService == null) {
-            // Initialize the BluetoothChatService to perform bluetooth connections
-            mChatService = new BluetoothChatService(SendPhotoActivity.this, mHandler);
+            // Initialize the BluetoothService to perform bluetooth connections
+            mChatService = new BluetoothService(SendPhotoActivity.this, mHandler);
 
             // Initialize the buffer for outgoing messages
             mOutStringBuffer = new StringBuffer("");
@@ -426,28 +461,6 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
     }
 
     /**
-     * Sends a message.
-     *
-     * @param message A string of text to send.
-     */
-    private void sendMessage(String message) {
-        Log.d(TAG, "sendMessage: "+message);
-        // Check that we're actually connected before trying anything
-        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
-            Log.d(TAG, "not connected");
-            return;
-        }
-
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
-            byte[] send = message.getBytes();
-            mChatService.write(send);
-
-        }
-    }
-
-    /**
      * Updates the status on the action bar.
      *
      * @param resId a string resource ID
@@ -467,5 +480,58 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
         status.setText(subTitle);
     }
 
+    private String getPhoto(){
+        Intent intent = getIntent();
+        if (intent.hasExtra(getString(R.string.selected_image))) {
+            imgUrl = intent.getStringExtra(getString(R.string.selected_image));
+            Log.d(TAG, "send image:"+ imgUrl);
+
+        }else
+            Log.d(TAG, "no selected image");
+        File imagefile = new File(imgUrl);
+        String imageString = imageFileToByte(imagefile);
+        Log.d(TAG, "getPhoto size: "+imageString.length());
+        return imageString;
+    }
+
+    public String imageFileToByte(File file){
+        Log.d(TAG, "imageFileToByte");
+        Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 70, baos); //bm is the bitmap object
+        byte[] bytes = baos.toByteArray();
+        String string = Base64.encodeToString(bytes, Base64.NO_WRAP);
+        return string;
+    }
+
+    /**
+     * Sends a message.
+     *
+     * @param message A string of text to send.
+     */
+    private void sendMessage(String message) {
+        Log.d(TAG, "sendMessage: "+message);
+        // Check that we're actually connected before trying anything
+        if (mChatService.getState() != BluetoothService.STATE_CONNECTED) {
+            Log.d(TAG, "not connected");
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+//            OutputStream mmOutStream;
+            // Get the message bytes and tell the BluetoothService to write
+            byte[] send = message.getBytes();
+            mChatService.write(send);
+
+        }
+    }
+
+    private void sendPhoto() throws InterruptedException {
+        sendMessage(getPhoto());
+        Thread.sleep(1000);
+        sendMessage("SendingFinished");
+
+    }
 
 }

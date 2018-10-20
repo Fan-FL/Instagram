@@ -37,9 +37,9 @@ import java.util.UUID;
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
  */
-public class BluetoothChatService {
+public class BluetoothService {
     // Debugging
-    private static final String TAG = "BluetoothChatService";
+    private static final String TAG = "BluetoothService";
 
     // Name for the SDP record when creating server socket
     private static final String NAME_SECURE = "BluetoothChatSecure";
@@ -73,7 +73,7 @@ public class BluetoothChatService {
      * @param context The UI Activity Context
      * @param handler A Handler to send messages back to the UI Activity
      */
-    public BluetoothChatService(Context context, Handler handler) {
+    public BluetoothService(Context context, Handler handler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mNewState = mState;
@@ -271,7 +271,7 @@ public class BluetoothChatService {
         updateUserInterfaceTitle();
 
         // Start the service over to restart listening mode
-        BluetoothChatService.this.start();
+        BluetoothService.this.start();
     }
 
     /**
@@ -290,7 +290,7 @@ public class BluetoothChatService {
         updateUserInterfaceTitle();
 
         // Start the service over to restart listening mode
-        BluetoothChatService.this.start();
+        BluetoothService.this.start();
     }
 
     /**
@@ -343,7 +343,7 @@ public class BluetoothChatService {
 
                 // If a connection was accepted
                 if (socket != null) {
-                    synchronized (BluetoothChatService.this) {
+                    synchronized (BluetoothService.this) {
                         switch (mState) {
                             case STATE_LISTEN:
                             case STATE_CONNECTING:
@@ -436,7 +436,7 @@ public class BluetoothChatService {
             }
 
             // Reset the ConnectThread because we're done
-            synchronized (BluetoothChatService.this) {
+            synchronized (BluetoothService.this) {
                 mConnectThread = null;
             }
 
@@ -484,6 +484,7 @@ public class BluetoothChatService {
         public void run() {
             Log.i(TAG, "BEGIN mConnectedThread");
             byte[] buffer = new byte[1024];
+            byte[] photoMessage = new byte[100000000];
             int bytes;
 
             // Keep listening to the InputStream while connected
@@ -491,11 +492,24 @@ public class BluetoothChatService {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
+//                    byte[] newPhotoMessage = new byte[photoMessage.length + buffer.length];
+//                    System.arraycopy(photoMessage, 0, newPhotoMessage, 0, photoMessage.length);
+//                    System.arraycopy(buffer, 0, newPhotoMessage, newPhotoMessage.length, buffer.length);
+//                    photoMessage = newPhotoMessage;
+//
+////                    Log.d(TAG, new String(photoMessage));
+//
+//                    String s = new String(buffer);
+//                    if (s.equals("SendingFinished")){
+//                        Log.d(TAG, "SendingFinished: "+ photoMessage);
+//                    }
 
                     // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
+                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, 0, buffer)
                             .sendToTarget();
-                } catch (IOException e) {
+
+                }
+                catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();
                     break;
