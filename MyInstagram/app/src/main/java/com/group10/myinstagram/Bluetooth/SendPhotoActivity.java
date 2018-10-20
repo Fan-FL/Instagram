@@ -1,6 +1,8 @@
 package com.group10.myinstagram.Bluetooth;
 
 import android.Manifest;
+import android.app.ActionBar;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -40,10 +42,20 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
     public DeviceListAdapter mDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     ListView newDevices;
+    /**
+     * Name of the connected device
+     */
+    private String mConnectedDeviceName = null;
 
     //bluetooth
-    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 1;
-    private static final int REQUEST_ENABLE_BT = 2;
+//    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 1;
+//    private static final int REQUEST_ENABLE_BT = 2;
+
+    // Intent request codes
+//    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 2;
+    private static final int REQUEST_ENABLE_BT = 3;
+
     private BluetoothAdapter bluetoothAdapter;
     private static final String[] BLUE_PERMISSIONS = {
             Manifest.permission.BLUETOOTH,
@@ -59,11 +71,35 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
         public void handleMessage(Message msg) {
             Log.d(TAG, "handleMessage: receive message"+msg);
             switch(msg.what){
+                case Constants.MESSAGE_STATE_CHANGE:
+                    Log.d(TAG, "state change");
+                    switch (msg.arg1) {
+                        case BluetoothChatService.STATE_CONNECTED:
+                            setStatus(R.string.title_connected_to + mConnectedDeviceName);
+                            break;
+                        case BluetoothChatService.STATE_CONNECTING:
+                            setStatus(R.string.title_connecting);
+                            break;
+                        case BluetoothChatService.STATE_LISTEN:
+                        case BluetoothChatService.STATE_NONE:
+                            setStatus(R.string.title_not_connected);
+                            break;
+                    }
+                    break;
                 case Constants.MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
+                    Log.d(TAG, "handleMessage: "+writeBuf);
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
                     Log.d(TAG, "write message:" + writeMessage);
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    if (null != SendPhotoActivity.this) {
+                        Toast.makeText(SendPhotoActivity.this, "Connected to "
+                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
@@ -156,6 +192,16 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
             public void onClick(View view) {
                 Log.d(TAG, "onClick: scan devices");
                 scanDevices();
+
+            }
+        });
+
+        Button btnSendMessage= (Button) findViewById(R.id.btn_send_message);
+
+        btnSendMessage.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: send messages");
+                sendMessage("aaasaaaaaaaaaaa");
 
             }
         });
@@ -292,7 +338,6 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceAddress);
         // Attempt to connect to the device
         mChatService.connect(device, false);
-        sendMessage("aaaaaaaaa");
     }
 
     //Bluetooth
@@ -401,4 +446,26 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
 
         }
     }
+
+    /**
+     * Updates the status on the action bar.
+     *
+     * @param resId a string resource ID
+     */
+    private void setStatus(int resId) {
+        TextView status = (TextView)findViewById(R.id.bluetooth_status);
+        status.setText(resId);
+    }
+
+    /**
+     * Updates the status on the action bar.
+     *
+     * @param subTitle status
+     */
+    private void setStatus(CharSequence subTitle) {
+        TextView status = (TextView)findViewById(R.id.bluetooth_status);
+        status.setText(subTitle);
+    }
+
+
 }

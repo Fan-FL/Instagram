@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.group10.myinstagram.R;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,10 +18,12 @@ public class ReceivePhotoActivity extends AppCompatActivity {
      * Member object for the chat services
      */
     private BluetoothChatService mChatService = null;
+
     /**
-     * String buffer for outgoing messages
+     * Name of the connected device
      */
-    private StringBuffer mOutStringBuffer;
+    private String mConnectedDeviceName = null;
+
 
     /**
      * The Handler that gets information back from the BluetoothChatService
@@ -28,11 +33,35 @@ public class ReceivePhotoActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             Log.d(TAG, "handleMessage: I have received messages!!!"+msg);
             switch(msg.what){
+                case Constants.MESSAGE_STATE_CHANGE:
+                    Log.d(TAG, "state change");
+                    switch (msg.arg1) {
+                        case BluetoothChatService.STATE_CONNECTED:
+                            setStatus(R.string.title_connected_to + mConnectedDeviceName);
+                            break;
+                        case BluetoothChatService.STATE_CONNECTING:
+                            setStatus(R.string.title_connecting);
+                            break;
+                        case BluetoothChatService.STATE_LISTEN:
+                        case BluetoothChatService.STATE_NONE:
+                            setStatus(R.string.title_not_connected);
+                            break;
+                    }
+                    break;
                 case Constants.MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
+                    Log.d(TAG, "handleMessage: "+writeBuf);
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
                     Log.d(TAG, "write message:" + writeMessage);
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    if (null != ReceivePhotoActivity.this) {
+                        Toast.makeText(ReceivePhotoActivity.this, "Connected to "
+                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
@@ -50,14 +79,15 @@ public class ReceivePhotoActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: receive photo");
+        setContentView(R.layout.activity_in_range);
 
         if (mChatService == null) {
             // Initialize the BluetoothChatService to perform bluetooth connections
             mChatService = new BluetoothChatService(ReceivePhotoActivity.this, mHandler);
 
             // Initialize the buffer for outgoing messages
-            mOutStringBuffer = new StringBuffer("");
-            mChatService.start();
+//            mOutStringBuffer = new StringBuffer("");
+//            mChatService.start();
         }
 
     }
@@ -85,5 +115,25 @@ public class ReceivePhotoActivity extends AppCompatActivity {
                 mChatService.start();
             }
         }
+    }
+
+    /**
+     * Updates the status on the action bar.
+     *
+     * @param resId a string resource ID
+     */
+    private void setStatus(int resId) {
+        TextView status = (TextView)findViewById(R.id.in_range_status);
+        status.setText(resId);
+    }
+
+    /**
+     * Updates the status on the action bar.
+     *
+     * @param subTitle status
+     */
+    private void setStatus(CharSequence subTitle) {
+        TextView status = (TextView)findViewById(R.id.in_range_status);
+        status.setText(subTitle);
     }
 }
