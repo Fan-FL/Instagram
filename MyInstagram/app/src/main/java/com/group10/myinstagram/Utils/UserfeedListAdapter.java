@@ -26,6 +26,7 @@ import com.group10.myinstagram.Models.Notification;
 import com.group10.myinstagram.Models.Photo;
 import com.group10.myinstagram.Models.User;
 import com.group10.myinstagram.Models.UserAccountSettings;
+import com.group10.myinstagram.Profile.ProfileActivity;
 import com.group10.myinstagram.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -170,8 +171,6 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                             + singleSnapshot.getValue(UserAccountSettings.class).getUsername());
 
                     holder.username.setText(singleSnapshot.getValue(UserAccountSettings.class).getUsername());
-                    /**
-                     * TODO: click show user profile
                     holder.username.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -184,12 +183,10 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                             intent.putExtra(mContext.getString(R.string.intent_user), holder.user);
                             mContext.startActivity(intent);
                         }
-                    });*/
+                    });
 
                     imageLoader.displayImage(singleSnapshot.getValue(UserAccountSettings.class).getProfile_photo(),
                             holder.mprofileImage);
-                    /**
-                     * TODO: click show user profile
                     holder.mprofileImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -202,7 +199,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                             intent.putExtra(mContext.getString(R.string.intent_user), holder.user);
                             mContext.startActivity(intent);
                         }
-                    });*/
+                    });
 
 
                     holder.settings = singleSnapshot.getValue(UserAccountSettings.class);
