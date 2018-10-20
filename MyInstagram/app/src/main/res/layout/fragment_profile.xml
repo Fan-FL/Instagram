@@ -29,6 +29,6 @@
         android:layout_marginTop="100dp"
         />
 
-    <include layout="@layout/layout_navigation"/>
+    <!--<include layout="@layout/layout_navigation"/>-->
 
 </RelativeLayout>

@@ -55,7 +55,7 @@ public class SignOutFragment extends Fragment {
                 getActivity().finish();
             }
         });
-        
+
         return view;
     }
 

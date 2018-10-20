@@ -14,7 +14,6 @@ import com.group10.myinstagram.Utils.Permissions;
 
 import androidx.fragment.app.Fragment;
 
-
 public class PhotoFragment extends Fragment {
     private static final String TAG = "PhotoFragment";
 

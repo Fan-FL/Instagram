@@ -20,6 +20,7 @@ import com.group10.myinstagram.Utils.FilePath;
 import com.group10.myinstagram.Utils.FileSearch;
 import com.group10.myinstagram.Utils.GridImageAdapter;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
@@ -29,6 +30,8 @@ import androidx.fragment.app.Fragment;
 
 public class GalleryFragment extends Fragment {
     private static final String TAG = "GalleryFragment";
+    private static final int PHOTO_FROM_GALLERY = 1;
+    private static final int PHOTO_FROM_CAMERA = 2;
 
     //constants
     private static final int NUM_GRID_COLUMNS = 3;
@@ -67,14 +70,13 @@ public class GalleryFragment extends Fragment {
         nextScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: navigating to the final share screen");
-                Intent intent = new Intent(getActivity(), NextActivity.class);
+                Log.d(TAG, "onClick: navigating to edit screen");
+                Intent intent = new Intent(getActivity(), GalleryPhotoEditorActivity.class);
                 intent.putExtra(getString(R.string.selected_image),mSelectedImage);
                 startActivity(intent);
-                Log.d(TAG, "onClick: navigating share screen");
+                Log.d(TAG, "onClick: navigating edit screen");
             }
         });
-
         init();
         return view;
     }
@@ -82,21 +84,31 @@ public class GalleryFragment extends Fragment {
     private void init(){
         FilePath filePath = new FilePath();
 
+        //check for other folder inside "/storage/emulated/0/DCIM"
+        ArrayList<String> pathArray = FileSearch.getDirectoryPaths(filePath.DCIM);
+        if (pathArray != null){
+            directories.addAll(pathArray);
+        }
+
         //check for other folder inside "/storage/emulated/0/picture"
-        if (FileSearch.getDirectoryPaths(filePath.PICTURES) != null){
-            directories.add(filePath.PICTURES);
+
+        pathArray = FileSearch.getDirectoryPaths(filePath.PICTURES);
+        if (pathArray != null){
+            directories.addAll(pathArray);
         }
 
-        ArrayList<String> directoryNames = new ArrayList<>();
-        for(int i = 0; i < directories.size(); i++){
-            int index = directories.get(i).lastIndexOf("/");
-            String string = directories.get(i).substring(index);
-            directoryNames.add(string);
-        }
-
-        directories.add(filePath.CAMERA);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item,directories);
+                android.R.layout.simple_spinner_item,directories){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent){
+                // Cast the grid view current item as a text view
+                TextView cell = (TextView) super.getView(position,convertView,parent);
+                cell.setHeight(50);
+
+                // Return the modified item
+                return cell;
+            }
+        };
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         directorySpinner.setAdapter(adapter);
 
@@ -114,12 +126,14 @@ public class GalleryFragment extends Fragment {
             }
         });
 
+        directorySpinner.setSelection(0, true);
+
     }
 
 
     private void setupGridView(String selectedDirectory){
         Log.d(TAG, "setupGridView: directory chosen: " + selectedDirectory);
-        final ArrayList<String> imgURLs = FileSearch.getFilePaths(selectedDirectory);
+        final ArrayList<String> imgURLs = FileSearch.getImageFilePaths(selectedDirectory);
 
         // //set the grid column width
         int gridWidth = getResources().getDisplayMetrics().widthPixels;
@@ -128,7 +142,11 @@ public class GalleryFragment extends Fragment {
 
         //use the grid adapter to adapt the images to gridview
         GridImageAdapter gridImageAdapter = new GridImageAdapter(getActivity(),R.layout.layout_grid_imageview,APPEND,imgURLs);
+//        gridView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 5));
         gridView.setAdapter(gridImageAdapter);
+        if (imgURLs.isEmpty()){
+            return;
+        }
 
         //set the first image to be displayed
         setImage(imgURLs.get(0),galleryImages,APPEND);
@@ -147,6 +165,7 @@ public class GalleryFragment extends Fragment {
     private void setImage(String imgURL, ImageView image, String append){
         Log.d(TAG, "setImage: setting image");
         ImageLoader imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
         imageLoader.displayImage(append + imgURL, image, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
@@ -161,6 +180,12 @@ public class GalleryFragment extends Fragment {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 mProgressBar.setVisibility(view.INVISIBLE);
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.e("1", "1111");
+                    }
+                });
             }
 
             @Override

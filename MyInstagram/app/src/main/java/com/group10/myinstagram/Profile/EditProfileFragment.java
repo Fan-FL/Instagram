@@ -137,7 +137,7 @@ public class EditProfileFragment extends Fragment implements
                 getActivity().finish();
             }
         });
-        
+
         ImageView checkMark = (ImageView) view.findViewById(R.id.saveChanges);
         checkMark.setOnClickListener(new View.OnClickListener() {
             @Override
