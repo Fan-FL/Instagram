@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +28,7 @@ import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
 import com.group10.myinstagram.Utils.NotificationListAdapter;
 import com.group10.myinstagram.Utils.UserListAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -47,7 +49,9 @@ public class NotificationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_activity_userfeed);
+        mListView = (ListView) findViewById(R.id.listView);
+        mNotificationList = new ArrayList<>();
         Log.d(TAG, "onCreate: started");
 
         setupBottomNavigationView();
@@ -56,17 +60,18 @@ public class NotificationActivity extends AppCompatActivity {
 
     private void getNotification() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference.child(getString(R.string.dbname_users))
-                .orderByChild(getString(R.string.field_username)).equalTo(keyword);
+        Query query = reference.child(getString(R.string.dbname_notification))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found user:" + singleSnapshot.getValue(User.class).toString());
+                    Log.d(TAG, "onDataChange: found notification:" +
+                            singleSnapshot.getValue(Notification.class).toString());
 
-                    mUserList.add(singleSnapshot.getValue(User.class));
+                    mNotificationList.add(singleSnapshot.getValue(Notification.class));
                     //update the users list view
-                    updateUsersList();
+                    updateNotificationList();
                 }
             }
 
@@ -80,7 +85,7 @@ public class NotificationActivity extends AppCompatActivity {
     private void updateNotificationList(){
         Log.d(TAG, "updateUsersList: updating users list");
 
-        mAdapter = new NotificationListAdapter(NotificationActivity.this, R.layout.layout_user_listitem, mUserList);
+        mAdapter = new NotificationListAdapter(NotificationActivity.this, R.layout.layout_user_listitem, mNotificationList);
 
         mListView.setAdapter(mAdapter);
     }
