@@ -85,7 +85,7 @@ public class NotificationActivity extends AppCompatActivity {
     private void updateNotificationList(){
         Log.d(TAG, "updateUsersList: updating users list");
 
-        mAdapter = new NotificationListAdapter(NotificationActivity.this, R.layout.layout_user_listitem, mNotificationList);
+        mAdapter = new NotificationListAdapter(NotificationActivity.this, R.layout.layout_notification, mNotificationList);
 
         mListView.setAdapter(mAdapter);
     }
