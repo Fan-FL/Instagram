@@ -20,12 +20,31 @@
     <string name="dbname_user_account_settings">user_account_settings</string>
     <string name="dbname_user_photos">user_photos</string>
     <string name="dbname_photos">photos</string>
+    <string name="dbname_following">following</string>
+    <string name="dbname_followers">followers</string>
+
     <string name="field_username">username</string>
     <string name="field_email">email</string>
     <string name="field_display_name">display_name</string>
     <string name="field_website">website</string>
     <string name="field_description">description</string>
     <string name="field_phone_number">phone_number</string>
+    <string name="field_user_id">user_id</string>
+    <string name="field_likes">likes</string>
+    <string name="field_caption">caption</string>
+    <string name="field_date_created">data_created</string>
+    <string name="field_photo_id">photo_id</string>
+    <string name="field_tags">tags</string>
+    <string name="field_image_path">image_path</string>
+    <string name="field_comments">comments</string>
+    <string name="field_comment">comment</string>
+    <string name="field_image_uri">image_uri</string>
+    <string name="field_video_uri">video_uri</string>
+    <string name="field_story_id">story_id</string>
+    <string name="field_views">views</string>
+    <string name="field_duration">duration</string>
+    <string name="field_profile_photo">profile_photo</string>
+    <string name="field_timestamp">timestamp</string>
 
     <!-- Dialog names -->
     <string name="confirm_password_dialog">ConfirmPasswordDialog</string>
@@ -39,6 +58,10 @@
 
     <!-- Activity -->
     <string name="profile_activity">Profile Activity</string>
+    <string name="main_activity">Main Activity</string>
+
+    <!-- fragment names -->
+    <string name="view_comments_fragment">View Comments</string>
 
     <!-- Strings -->
     <string name="gallery">GALLERY</string>
