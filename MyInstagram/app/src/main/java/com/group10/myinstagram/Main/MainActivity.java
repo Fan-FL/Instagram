@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.group10.myinstagram.Bluetooth.ReceivePhotoActivity;
 import com.group10.myinstagram.Bluetooth.SendPhotoActivity;
 import com.group10.myinstagram.Login.LoginActivity;
 import com.group10.myinstagram.Models.Comment;
@@ -140,6 +141,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+
+        Button btnReceivePhoto = (Button) findViewById(R.id.btn_receive_photo);
+
+        btnReceivePhoto.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: receive photo.");
+                Intent intent = new Intent(mContext, ReceivePhotoActivity.class);
+                startActivity(intent);
             }
         });
     }
