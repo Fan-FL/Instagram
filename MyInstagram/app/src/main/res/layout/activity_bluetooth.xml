@@ -73,4 +73,13 @@
         app:layout_constraintTop_toBottomOf="@+id/newDevices"
         app:layout_constraintVertical_bias="0.419" />
 
+    <ImageView
+        android:id="@+id/receivedImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        tools:layout_editor_absoluteX="262dp"
+        tools:layout_editor_absoluteY="398dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

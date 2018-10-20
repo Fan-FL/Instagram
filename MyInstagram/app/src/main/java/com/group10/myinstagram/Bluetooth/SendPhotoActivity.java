@@ -114,16 +114,19 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
                     int bytes = msg.arg1;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    imageString = imageString + readMessage;
-                    Log.d(TAG, "read message: "+readMessage);
-                    Log.d(TAG, "allMessage: " + imageString);
-                    Log.d(TAG, "message size:" + imageString.length());
-//                    if (readMessage.equals("SendingFinished")){
-//                        ImageView imageView = (ImageView) findViewById(R.id.imageShare);
-//                        byte[] decodedString = Base64.decode(imageString.getBytes(), Base64.DEFAULT);
-//                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//                        imageView.setImageBitmap(bitmap);
-//                    }
+
+                    if (readMessage.equals("SendingFinished")){
+                        Log.d(TAG, "handleMessage: finish sending ");
+                        ImageView imageView = (ImageView) findViewById(R.id.receivedImage);
+                        byte[] decodedString = Base64.decode(imageString.getBytes(), Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        imageView.setImageBitmap(decodedByte);
+                    } else {
+                        imageString = imageString + readMessage;
+                        Log.d(TAG, "read message: "+readMessage);
+                        Log.d(TAG, "allMessage: " + imageString);
+                        Log.d(TAG, "message size:" + imageString.length());
+                    }
                     break;
                 default:
                     break;
@@ -501,6 +504,12 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
         bm.compress(Bitmap.CompressFormat.JPEG, 70, baos); //bm is the bitmap object
         byte[] bytes = baos.toByteArray();
         String string = Base64.encodeToString(bytes, Base64.NO_WRAP);
+
+        ImageView imageView = (ImageView) findViewById(R.id.receivedImage);
+        byte[] decodedString = Base64.decode(string.getBytes(), Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        imageView.setImageBitmap(decodedByte);
+
         return string;
     }
 
