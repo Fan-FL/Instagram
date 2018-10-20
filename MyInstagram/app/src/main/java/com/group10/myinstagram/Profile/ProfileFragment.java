@@ -2,6 +2,7 @@ package com.group10.myinstagram.Profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,32 +15,38 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.group10.myinstagram.Models.Photo;
 import com.group10.myinstagram.Models.UserAccountSettings;
 import com.group10.myinstagram.Models.UserSettings;
+import com.group10.myinstagram.Profile.AccountSettingsActivity;
 import com.group10.myinstagram.R;
 import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
 import com.group10.myinstagram.Utils.FirebaseMethods;
+import com.group10.myinstagram.Utils.GridImageAdapter;
 import com.group10.myinstagram.Utils.UniversalImageLoader;
+
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
     private static final int ACTIVITY_NUM = 4;
+    private static final int NUM_GRID_COLUMNS = 3;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -52,9 +59,9 @@ public class ProfileFragment extends Fragment {
     private ProgressBar mProgressBar;
     private CircleImageView mProfilePhoto;
     private GridView mGridView;
-    private Toolbar mToolbar;
+    private androidx.appcompat.widget.Toolbar mToolbar;
     private ImageView mProfileMenu;
-    private BottomNavigationView mBottomNavigationView;
+//    private BottomNavigationViewEx mBottomNavigationView;
     private Context mContext;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -75,16 +82,17 @@ public class ProfileFragment extends Fragment {
         mProfileMenu = (ImageView) view.findViewById(R.id.profileMenu);
         mGridView = (GridView) view.findViewById(R.id.gridView);
 
-        mToolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
+        mToolbar = view.findViewById(R.id.profileToolBar);
         mProfileMenu = (ImageView) view.findViewById(R.id.profileMenu);
-        mBottomNavigationView = (BottomNavigationView) view.findViewById(R.id.bottom_navigation);
+//        mBottomNavigationView = (BottomNavigationViewEx) view.findViewById(R.id.bottomNavigationView);
         mContext = getActivity();
         mFirebaseMethods = new FirebaseMethods(getActivity());
         Log.d(TAG, "onCreateView: started.");
 
-        setupBottomNavigationView();
+//        setupBottomNavigationView();
         setupToolbar();
         setupFirebaseAuth();
+        setupGridView();
 
         TextView editProfile = (TextView) view.findViewById(R.id.textEditProfile);
         editProfile.setOnClickListener(new View.OnClickListener() {
@@ -119,12 +127,47 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    private void setupGridView(){
+        Log.d(TAG, "setupGridView: setting up the image grid view on the profile screen");
+        final ArrayList<Photo> photos = new ArrayList<>();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        Query query = databaseReference.child(getString(R.string.dbname_user_photos))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    photos.add(singleSnapshot.getValue(Photo.class));
+                }
+                int gridWidth = getResources().getDisplayMetrics().widthPixels;
+                int imageWidth = gridWidth/NUM_GRID_COLUMNS;
+                //set up the image grid view
+                mGridView.setColumnWidth(imageWidth);
+
+                ArrayList<String> imgUrls = new ArrayList<String>();
+                for(int i = 0; i< photos.size();i++){
+                    imgUrls.add(photos.get(i).getImage_path());
+                }
+
+                Log.d(TAG, "onDataChange: the urls" + imgUrls);
+                GridImageAdapter adapter = new GridImageAdapter(getActivity(),
+                        R.layout.layout_grid_imageview,"",imgUrls);
+                mGridView.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: query cancelled");
+            }
+        });
+    }
 
     /**
      * Responsible for setting up the profile toolbar
      */
     private void setupToolbar(){
-        ((ProfileActivity)getActivity()).setSupportActionBar(mToolbar);
+//        ((ProfileActivity)getActivity()).setSupportActionBar(mToolbar);
 
         mProfileMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,18 +177,6 @@ public class ProfileFragment extends Fragment {
                 startActivity(intent);
             }
         });
-    }
-
-    /**
-     * BottomNavigationView setup
-     */
-    private void setupBottomNavigationView(){
-        Log.d(TAG,"setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationViewHelper.enableNavigation(mContext, mBottomNavigationView);
-
-        Menu menu = mBottomNavigationView.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
     }
      /*
     -------------------------------------Firebase ----------------------------------------------
