@@ -2,6 +2,7 @@ package com.group10.myinstagram.Main;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +10,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +33,7 @@ import com.group10.myinstagram.R;
 import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
 import com.group10.myinstagram.Utils.UniversalImageLoader;
 import com.group10.myinstagram.Utils.UserfeedListAdapter;
+import com.group10.myinstagram.Utils.ViewCommentsFragment;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -50,11 +55,17 @@ public class MainActivity extends AppCompatActivity {
     private ListView mListView;
     private UserfeedListAdapter mAdapter;
 
+    private FrameLayout mFrameLayout;
+    private RelativeLayout mRelativeLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG,"onCreate: starting.");
+
+        mFrameLayout = (FrameLayout) findViewById(R.id.container);
+        mRelativeLayout = (RelativeLayout) findViewById(R.id.relLayoutParent);
 
         setupFirebaseAuth();
         setupBottomNavigationView();
@@ -63,6 +74,34 @@ public class MainActivity extends AppCompatActivity {
         mListView = (ListView) findViewById(R.id.listView);
         mFollowing = new ArrayList<>();
         mPhotos = new ArrayList<>();
+    }
+
+    public void onCommentThreadSelected(Photo photo, String callingActivity){
+        Log.d(TAG, "onCommentThreadSelected: selected a comment thread");
+
+        ViewCommentsFragment fragment  = new ViewCommentsFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(getString(R.string.photo), photo);
+        args.putString(getString(R.string.main_activity), getString(R.string.main_activity));
+        fragment.setArguments(args);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment);
+        transaction.addToBackStack(getString(R.string.view_comments_fragment));
+        transaction.commit();
+    }
+
+    public void hideLayout(){
+        Log.d(TAG, "hideLayout: hiding layout");
+        mRelativeLayout.setVisibility(View.GONE);
+        mFrameLayout.setVisibility(View.VISIBLE);
+    }
+
+
+    public void showLayout(){
+        Log.d(TAG, "hideLayout: showing layout");
+        mRelativeLayout.setVisibility(View.VISIBLE);
+        mFrameLayout.setVisibility(View.GONE);
     }
 
     private void initImageLoader(){
