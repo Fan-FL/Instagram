@@ -9,6 +9,8 @@ public class Notification implements Parcelable {
     private String action;
     private String image_path;
 
+    public Notification() {}
+
     public Notification(String user_id, String create_time, String action, String image_path) {
         this.user_id = user_id;
         this.create_time = create_time;

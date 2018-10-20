@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.group10.myinstagram.Models.Comment;
+import com.group10.myinstagram.Models.Notification;
 import com.group10.myinstagram.Models.Like;
 import com.group10.myinstagram.Models.Photo;
 import com.group10.myinstagram.Models.User;
@@ -146,6 +147,19 @@ public class ViewProfileFragment extends Fragment {
                         .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                         .child(getString(R.string.field_user_id))
                         .setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                Notification notification = new Notification();
+                notification.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                notification.setAction(getString(R.string.action_follow));
+                notification.setCreate_time(getTimestamp());
+                String newNotificationID = FirebaseDatabase.getInstance().getReference().push().getKey();
+
+                FirebaseDatabase.getInstance().getReference()
+                        .child(getString(R.string.dbname_notification))
+                        .child(mUser.getUser_id())
+                        .child(newNotificationID)
+                        .setValue(notification);
+
                 setFollowing();
             }
         });
@@ -273,6 +287,12 @@ public class ViewProfileFragment extends Fragment {
         });
     }
 
+    private String getTimestamp(){
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("Australia/Sydney"));
+        return sdf.format(new java.util.Date());
+    }
+
     private void isFollowing(){
         Log.d(TAG, "isFollowing: checking if following this users.");
         setUnfollowing();
@@ -369,6 +389,7 @@ public class ViewProfileFragment extends Fragment {
 
     private void setFollowing(){
         Log.d(TAG, "setFollowing: updating UI for following this user");
+        mFollowers.setText(String.valueOf(Integer.parseInt(mFollowers.getText().toString())+1));
         mFollow.setVisibility(View.GONE);
         mUnfollow.setVisibility(View.VISIBLE);
         editProfile.setVisibility(View.GONE);
@@ -376,6 +397,7 @@ public class ViewProfileFragment extends Fragment {
 
     private void setUnfollowing(){
         Log.d(TAG, "setFollowing: updating UI for unfollowing this user");
+        mFollowers.setText(String.valueOf(Integer.parseInt(mFollowers.getText().toString())-1));
         mFollow.setVisibility(View.VISIBLE);
         mUnfollow.setVisibility(View.GONE);
         editProfile.setVisibility(View.GONE);
