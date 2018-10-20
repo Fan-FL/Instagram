@@ -47,6 +47,12 @@
     <string name="field_duration">duration</string>
     <string name="field_profile_photo">profile_photo</string>
     <string name="field_timestamp">timestamp</string>
+    <string name="field_followers">followers</string>
+    <string name="field_following">following</string>
+
+    <!-- Action -->
+    <string name="action_follow">follow</string>
+    <string name="action_like">like</string>
 
     <!-- Dialog names -->
     <string name="confirm_password_dialog">ConfirmPasswordDialog</string>
