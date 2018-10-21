@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.group10.myinstagram.Models.Notification;
+import com.group10.myinstagram.Models.Photo;
 import com.group10.myinstagram.Models.User;
 import com.group10.myinstagram.Profile.ProfileActivity;
 import com.group10.myinstagram.R;
@@ -29,6 +30,8 @@ import com.group10.myinstagram.Utils.NotificationListAdapter;
 import com.group10.myinstagram.Utils.UserListAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -85,9 +88,17 @@ public class NotificationActivity extends AppCompatActivity {
     private void updateNotificationList(){
         Log.d(TAG, "updateUsersList: updating users list");
 
-        mAdapter = new NotificationListAdapter(NotificationActivity.this, R.layout.layout_notification, mNotificationList);
+        if (mNotificationList != null) {
+            Collections.sort(mNotificationList, new Comparator<Notification>() {
+                @Override
+                public int compare(Notification o1, Notification o2) {
+                    return o2.getCreate_time().compareTo(o1.getCreate_time());
+                }
+            });
 
-        mListView.setAdapter(mAdapter);
+            mAdapter = new NotificationListAdapter(NotificationActivity.this, R.layout.layout_notification, mNotificationList);
+            mListView.setAdapter(mAdapter);
+        }
     }
 
     private void setupBottomNavigationView(){

@@ -446,7 +446,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                         + ", " + splitUsers[1]
                         + ", " + splitUsers[2]
                         + " and " + (splitUsers.length - 3) + " others";
-            } else {
+            } else if (length == 0){
                 holder.likesString = "";
             }
             Log.d(TAG, "onDataChange: likes string: " + holder.likesString);
