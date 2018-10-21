@@ -8,6 +8,7 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -32,11 +33,13 @@ import com.group10.myinstagram.Bluetooth.ReceivePhotoActivity;
 import com.group10.myinstagram.Bluetooth.SendPhotoActivity;
 import com.group10.myinstagram.Login.LoginActivity;
 import com.group10.myinstagram.Models.Comment;
+import com.group10.myinstagram.Models.InRangePhoto;
 import com.group10.myinstagram.Models.Like;
 import com.group10.myinstagram.Models.Photo;
 import com.group10.myinstagram.Models.UserAccountSettings;
 import com.group10.myinstagram.R;
 import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
+import com.group10.myinstagram.Utils.InRangePhotoListAdapter;
 import com.group10.myinstagram.Utils.UniversalImageLoader;
 import com.group10.myinstagram.Utils.UserfeedListAdapter;
 import com.group10.myinstagram.Utils.ViewCommentsFragment;
@@ -60,11 +63,15 @@ public class MainActivity extends AppCompatActivity {
     //vars
     private ArrayList<Photo> mPhotos;
     private ArrayList<String> mFollowing;
+    private ArrayList<InRangePhoto> mInrangePhotos;
     private ListView mListView;
     private UserfeedListAdapter mAdapter;
+    private InRangePhotoListAdapter mInrangeAdapter;
 
     private FrameLayout mFrameLayout;
     private RelativeLayout mRelativeLayout;
+    private Intent intent;
+    private Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,24 +82,39 @@ public class MainActivity extends AppCompatActivity {
         mFrameLayout = (FrameLayout) findViewById(R.id.container);
         mRelativeLayout = (RelativeLayout) findViewById(R.id.relLayoutParent);
 
-        setupFirebaseAuth();
         setupBottomNavigationView();
-        initImageLoader();
 
-        mListView = (ListView) findViewById(R.id.listView);
-        mFollowing = new ArrayList<>();
-        mPhotos = new ArrayList<>();
+        intent = getIntent();
+        if (intent.hasExtra(getString(R.string.received_image))) {
+            Log.d(TAG, "onCreate: get intent.");
+            Bitmap bitmap = intent.getParcelableExtra(getString(R.string.received_image));
 
-        ImageView btnRecive = (ImageView) findViewById(R.id.btn_receive);
+            mInrangePhotos = new ArrayList<>();
+            InRangePhoto inRangePhoto = new InRangePhoto(bitmap);
+            mInrangePhotos.add(inRangePhoto);
 
-        btnRecive.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: receive photo via bluetooth");
-                Intent intent = new Intent(MainActivity.this, ReceivePhotoActivity.class);
-                startActivity(intent);
+            mInrangeAdapter = new InRangePhotoListAdapter(mContext, R.layout.layout_inrange_listitem, mInrangePhotos);
+            mListView.setAdapter(mInrangeAdapter);
+        } else {
+            setupFirebaseAuth();
+            initImageLoader();
 
-            }
-        });
+            mListView = (ListView) findViewById(R.id.listView);
+            mFollowing = new ArrayList<>();
+            mPhotos = new ArrayList<>();
+
+            ImageView btnRecive = (ImageView) findViewById(R.id.btn_receive);
+
+            btnRecive.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View view) {
+                    Log.d(TAG, "onClick: receive photo via bluetooth");
+                    Intent intent = new Intent(MainActivity.this, ReceivePhotoActivity.class);
+                    startActivity(intent);
+
+                }
+            });
+        }
+
     }
 
     public void onCommentThreadSelected(Photo photo, String callingActivity){
