@@ -70,19 +70,23 @@ public class NextActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to the final share screen");
                 //upload the image to firebase
-                Toast.makeText(NextActivity.this, "Attempting to upload new photo.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(NextActivity.this, "Attempting to upload new photo.", Toast
+                        .LENGTH_SHORT).show();
 
                 String caption = mCaption.getText().toString();
                 if (intent.hasExtra(getString(R.string.selected_image))) {
                     imgUrl = intent.getStringExtra(getString(R.string.selected_image));
                     //UniversalImageLoader.setImage(imgUrl, imageView,null, mAppend);
-                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, imgUrl,null);
-                }else if(intent.hasExtra(getString(R.string.selected_bitmap))){
+                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption,
+                            imageCount, imgUrl, null);
+                } else if (intent.hasExtra(getString(R.string.selected_bitmap))) {
                     bitmap = intent.getParcelableExtra(getString(R.string.selected_bitmap));
-                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, null,bitmap);
+                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption,
+                            imageCount, null, bitmap);
                     //UniversalImageLoader.setImage(imgUrl, imageView,null, mAppend);
                 }
-                //mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, imgUrl,null);
+                //mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption,
+                // imageCount, imgUrl,null);
             }
         });
 
@@ -98,7 +102,7 @@ public class NextActivity extends AppCompatActivity {
                 if (intent.hasExtra(getString(R.string.selected_image))) {
                     imgUrl = intent.getStringExtra(getString(R.string.selected_image));
                 }
-                Log.d(TAG, "send image via bluetooth:"+ imgUrl);
+                Log.d(TAG, "send image via bluetooth:" + imgUrl);
                 nextIntent.putExtra(getString(R.string.selected_image), imgUrl);
                 startActivity(nextIntent);
             }
@@ -109,13 +113,13 @@ public class NextActivity extends AppCompatActivity {
     /**
      * get the image url from the incoming intent and displays the chosen image
      */
-    private void setImage(){
+    private void setImage() {
         intent = getIntent();
         ImageView imageView = (ImageView) findViewById(R.id.imageShare);
         if (intent.hasExtra(getString(R.string.selected_image))) {
             imgUrl = intent.getStringExtra(getString(R.string.selected_image));
-            UniversalImageLoader.setImage(imgUrl, imageView,null, mAppend);
-        }else if(intent.hasExtra(getString(R.string.selected_bitmap))){
+            UniversalImageLoader.setImage(imgUrl, imageView, null, mAppend);
+        } else if (intent.hasExtra(getString(R.string.selected_bitmap))) {
             bitmap = intent.getParcelableExtra(getString(R.string.selected_bitmap));
             imageView.setImageBitmap(bitmap);
         }
@@ -129,7 +133,7 @@ public class NextActivity extends AppCompatActivity {
     /**
      * Setting up Firebase auth object."
      */
-    private void setupFirebaseAuth(){
+    private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -140,9 +144,9 @@ public class NextActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if(user != null){
-                    Log.d(TAG, "onAuthStateChanged: signed_in: "+ user.getUid());
-                }else {
+                if (user != null) {
+                    Log.d(TAG, "onAuthStateChanged: signed_in: " + user.getUid());
+                } else {
                     Log.d(TAG, "onAuthStateChanged: signed_out");
                 }
             }
@@ -172,7 +176,7 @@ public class NextActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        if(mAuthStateListener != null){
+        if (mAuthStateListener != null) {
             mAuth.removeAuthStateListener(mAuthStateListener);
         }
     }

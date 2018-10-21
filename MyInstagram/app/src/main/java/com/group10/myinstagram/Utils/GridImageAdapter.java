@@ -25,17 +25,14 @@ public class GridImageAdapter extends ArrayAdapter<String> {
     private String mAppend;
     private ArrayList<String> imgURLs;
 
-    public GridImageAdapter(Context context, int layoutResource, String append, ArrayList<String> imgURLs) {
-        super(context,layoutResource,imgURLs);
+    public GridImageAdapter(Context context, int layoutResource, String append, ArrayList<String>
+            imgURLs) {
+        super(context, layoutResource, imgURLs);
         mContext = context;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.layoutResource = layoutResource;
         mAppend = append;
         this.imgURLs = imgURLs;
-    }
-    private static class ViewHolder{
-        SquareImageView image;
-        ProgressBar mProgressBar;
     }
 
     @NonNull
@@ -45,14 +42,14 @@ public class GridImageAdapter extends ArrayAdapter<String> {
          * viewholder build pattern (similar to recycle view)
          */
         final ViewHolder holder;
-        if(convertView == null){
-            convertView = mInflater.inflate(layoutResource,parent,false);
+        if (convertView == null) {
+            convertView = mInflater.inflate(layoutResource, parent, false);
             holder = new ViewHolder();
             holder.mProgressBar = (ProgressBar) convertView.findViewById(R.id.gridImageProgressbar);
             holder.image = (SquareImageView) convertView.findViewById(R.id.gridImageView);
 
             convertView.setTag(holder);
-        }else {
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
         String imgURL = getItem(position);
@@ -60,33 +57,38 @@ public class GridImageAdapter extends ArrayAdapter<String> {
         imageLoader.displayImage(mAppend + imgURL, holder.image, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
-                if(holder.mProgressBar != null){
+                if (holder.mProgressBar != null) {
                     holder.mProgressBar.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                if(holder.mProgressBar != null){
+                if (holder.mProgressBar != null) {
                     holder.mProgressBar.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                if(holder.mProgressBar != null){
+                if (holder.mProgressBar != null) {
                     holder.mProgressBar.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
-                if(holder.mProgressBar != null){
+                if (holder.mProgressBar != null) {
                     holder.mProgressBar.setVisibility(View.GONE);
                 }
             }
         });
 
         return convertView;
+    }
+
+    private static class ViewHolder {
+        SquareImageView image;
+        ProgressBar mProgressBar;
     }
 }

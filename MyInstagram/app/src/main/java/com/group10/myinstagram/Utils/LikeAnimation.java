@@ -12,8 +12,10 @@ public class LikeAnimation {
 
     private static final String TAG = "Heart";
 
-    private static final DecelerateInterpolator DECCELERATE_INTERPOLATOR = new DecelerateInterpolator();
-    private static final AccelerateInterpolator ACCELERATE_INTERPOLATOR = new AccelerateInterpolator();
+    private static final DecelerateInterpolator DECCELERATE_INTERPOLATOR = new
+            DecelerateInterpolator();
+    private static final AccelerateInterpolator ACCELERATE_INTERPOLATOR = new
+            AccelerateInterpolator();
 
     public ImageView likeOutline, likeHeart;
 
@@ -22,13 +24,13 @@ public class LikeAnimation {
         this.likeHeart = likeHeart;
     }
 
-    public void toggleLike(){
+    public void toggleLike() {
         Log.d(TAG, "toggleLike: toggling heart.");
 
-        AnimatorSet animationSet =  new AnimatorSet();
+        AnimatorSet animationSet = new AnimatorSet();
 
 
-        if(likeHeart.getVisibility() == View.VISIBLE){
+        if (likeHeart.getVisibility() == View.VISIBLE) {
             Log.d(TAG, "toggleLike: toggling red heart off.");
             likeHeart.setScaleX(0.1f);
             likeHeart.setScaleY(0.1f);
@@ -45,9 +47,7 @@ public class LikeAnimation {
             likeOutline.setVisibility(View.VISIBLE);
 
             animationSet.playTogether(scaleDownY, scaleDownX);
-        }
-
-        else if(likeHeart.getVisibility() == View.GONE){
+        } else if (likeHeart.getVisibility() == View.GONE) {
             Log.d(TAG, "toggleLike: toggling red heart on.");
             likeHeart.setScaleX(0.1f);
             likeHeart.setScaleY(0.1f);

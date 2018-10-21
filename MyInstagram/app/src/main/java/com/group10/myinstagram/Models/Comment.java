@@ -54,11 +54,7 @@ public class Comment {
 
     @Override
     public String toString() {
-        return "Comment{" +
-                "comment='" + comment + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", likes=" + likes +
-                ", date_created='" + date_created + '\'' +
-                '}';
+        return "Comment{" + "comment='" + comment + '\'' + ", user_id='" + user_id + '\'' + ", " +
+                "likes=" + likes + ", date_created='" + date_created + '\'' + '}';
     }
 }

@@ -25,6 +25,12 @@ public class ImageFileNameFilter {
         }
     }
 
+    /**
+     * check if a file is a image file
+     *
+     * @param fname
+     * @return
+     */
     public boolean accept(String fname) {
         return (isGif(fname) || isJpg(fname) || isPng(fname));
 

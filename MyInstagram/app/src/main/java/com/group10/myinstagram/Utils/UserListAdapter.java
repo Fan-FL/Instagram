@@ -36,19 +36,14 @@ public class UserListAdapter extends ArrayAdapter<User> {
     private int layoutResource;
     private Context mContext;
 
-    public UserListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<User> objects) {
+    public UserListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<User>
+            objects) {
         super(context, resource, objects);
         mContext = context;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutResource = resource;
         this.mUsers = objects;
     }
-
-    private static class ViewHolder{
-        TextView username, email;
-        CircleImageView profileImage;
-    }
-
 
     @NonNull
     @Override
@@ -57,7 +52,7 @@ public class UserListAdapter extends ArrayAdapter<User> {
 
         final ViewHolder holder;
 
-        if(convertView == null){
+        if (convertView == null) {
             convertView = mInflater.inflate(layoutResource, parent, false);
             holder = new ViewHolder();
 
@@ -66,7 +61,7 @@ public class UserListAdapter extends ArrayAdapter<User> {
             holder.profileImage = (CircleImageView) convertView.findViewById(R.id.profile_image);
 
             convertView.setTag(holder);
-        }else{
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
@@ -76,19 +71,19 @@ public class UserListAdapter extends ArrayAdapter<User> {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         Query query = reference.child(mContext.getString(R.string.dbname_user_account_settings))
-                .orderByChild(mContext.getString(R.string.field_user_id))
-                .equalTo(getItem(position).getUser_id());
+                .orderByChild(mContext.getString(R.string.field_user_id)).equalTo(getItem
+                        (position).getUser_id());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found user: " +
-                            singleSnapshot.getValue(UserAccountSettings.class).toString());
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, "onDataChange: found user: " + singleSnapshot.getValue
+                            (UserAccountSettings.class).toString());
 
                     ImageLoader imageLoader = ImageLoader.getInstance();
 
-                    imageLoader.displayImage(singleSnapshot.getValue(UserAccountSettings.class).getProfile_photo(),
-                            holder.profileImage);
+                    imageLoader.displayImage(singleSnapshot.getValue(UserAccountSettings.class)
+                            .getProfile_photo(), holder.profileImage);
                 }
             }
 
@@ -99,5 +94,10 @@ public class UserListAdapter extends ArrayAdapter<User> {
         });
 
         return convertView;
+    }
+
+    private static class ViewHolder {
+        TextView username, email;
+        CircleImageView profileImage;
     }
 }

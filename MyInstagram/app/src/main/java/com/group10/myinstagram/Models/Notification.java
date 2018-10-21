@@ -4,12 +4,24 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Notification implements Parcelable {
+    public static final Creator<Notification> CREATOR = new Creator<Notification>() {
+        @Override
+        public Notification createFromParcel(Parcel in) {
+            return new Notification(in);
+        }
+
+        @Override
+        public Notification[] newArray(int size) {
+            return new Notification[size];
+        }
+    };
     private String user_id;
     private String create_time;
     private String action;
     private String image_path;
 
-    public Notification() {}
+    public Notification() {
+    }
 
     public Notification(String user_id, String create_time, String action, String image_path) {
         this.user_id = user_id;
@@ -24,18 +36,6 @@ public class Notification implements Parcelable {
         action = in.readString();
         image_path = in.readString();
     }
-
-    public static final Creator<Notification> CREATOR = new Creator<Notification>() {
-        @Override
-        public Notification createFromParcel(Parcel in) {
-            return new Notification(in);
-        }
-
-        @Override
-        public Notification[] newArray(int size) {
-            return new Notification[size];
-        }
-    };
 
     public String getUser_id() {
         return user_id;
@@ -71,12 +71,8 @@ public class Notification implements Parcelable {
 
     @Override
     public String toString() {
-        return "Notification{" +
-                "user_id='" + user_id + '\'' +
-                ", create_time='" + create_time + '\'' +
-                ", action='" + action + '\'' +
-                ", image_path='" + image_path + '\'' +
-                '}';
+        return "Notification{" + "user_id='" + user_id + '\'' + ", create_time='" + create_time +
+                '\'' + ", action='" + action + '\'' + ", image_path='" + image_path + '\'' + '}';
     }
 
     @Override

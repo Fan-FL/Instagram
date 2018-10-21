@@ -34,7 +34,7 @@ public class CameraView extends SurfaceView {
         //  Find Screen size first
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         int screenWidth = metrics.widthPixels;
-        int screenHeight = (int) (metrics.heightPixels*0.9);
+        int screenHeight = (int) (metrics.heightPixels * 0.9);
 
         //  Set paint options
         paint.setAntiAlias(true);
@@ -42,10 +42,10 @@ public class CameraView extends SurfaceView {
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.argb(255, 255, 255, 255));
 
-        canvas.drawLine((screenWidth/3)*2,0,(screenWidth/3)*2,screenHeight,paint);
-        canvas.drawLine((screenWidth/3),0,(screenWidth/3),screenHeight,paint);
-        canvas.drawLine(0,(screenHeight/3)*2,screenWidth,(screenHeight/3)*2,paint);
-        canvas.drawLine(0,(screenHeight/3),screenWidth,(screenHeight/3),paint);
+        canvas.drawLine((screenWidth / 3) * 2, 0, (screenWidth / 3) * 2, screenHeight, paint);
+        canvas.drawLine((screenWidth / 3), 0, (screenWidth / 3), screenHeight, paint);
+        canvas.drawLine(0, (screenHeight / 3) * 2, screenWidth, (screenHeight / 3) * 2, paint);
+        canvas.drawLine(0, (screenHeight / 3), screenWidth, (screenHeight / 3), paint);
     }
 
     @Override

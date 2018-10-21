@@ -107,7 +107,8 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
                         mPhotoEditorView.getSource().setImageURI(imageUri);
                         sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, imageUri));
                         Log.d(TAG, "onClick: navigating to the final share screen");
-                        Intent intent = new Intent(GalleryPhotoEditorActivity.this, NextActivity.class);
+                        Intent intent = new Intent(GalleryPhotoEditorActivity.this, NextActivity
+                                .class);
                         intent.putExtra(getString(R.string.selected_image), imagePath);
                         startActivity(intent);
                         Log.d(TAG, "onClick: navigating share screen");
@@ -146,7 +147,7 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
         blackWhiteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mPhotoEditor != null){
+                if (mPhotoEditor != null) {
                     seekbars.setVisibility(View.GONE);
                     mPhotoEditor.setFilterEffect(PhotoFilter.BLACK_WHITE);
                 }
@@ -155,7 +156,7 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
         sharpenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mPhotoEditor != null){
+                if (mPhotoEditor != null) {
                     seekbars.setVisibility(View.GONE);
                     mPhotoEditor.setFilterEffect(PhotoFilter.SHARPEN);
                 }
@@ -164,7 +165,7 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
         documentaryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mPhotoEditor != null){
+                if (mPhotoEditor != null) {
                     seekbars.setVisibility(View.GONE);
                     mPhotoEditor.setFilterEffect(PhotoFilter.DOCUMENTARY);
                 }
@@ -173,18 +174,16 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
         bright_contrastButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mPhotoEditor != null){
+                if (mPhotoEditor != null) {
                     seekbars.setVisibility(View.VISIBLE);
                 }
             }
         });
         brightnessseekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar arg0, int progress,
-                                          boolean fromUser) {
-                float brightness = progress/40.0f;
-                CustomEffect customEffect = new CustomEffect.Builder(EffectFactory.EFFECT_BRIGHTNESS)
-                        .setParameter("brightness", brightness)
-                        .build();
+            public void onProgressChanged(SeekBar arg0, int progress, boolean fromUser) {
+                float brightness = progress / 40.0f;
+                CustomEffect customEffect = new CustomEffect.Builder(EffectFactory
+                        .EFFECT_BRIGHTNESS).setParameter("brightness", brightness).build();
                 mPhotoEditor.setFilterEffect(customEffect);
 
             }
@@ -197,12 +196,10 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
         });
 
         contrastseekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar arg0, int progress,
-                                          boolean fromUser) {
-                float contrast = progress/50.0f;
-                CustomEffect customEffect = new CustomEffect.Builder(EffectFactory.EFFECT_CONTRAST)
-                        .setParameter("contrast", contrast)
-                        .build();
+            public void onProgressChanged(SeekBar arg0, int progress, boolean fromUser) {
+                float contrast = progress / 50.0f;
+                CustomEffect customEffect = new CustomEffect.Builder(EffectFactory
+                        .EFFECT_CONTRAST).setParameter("contrast", contrast).build();
                 mPhotoEditor.setFilterEffect(customEffect);
 
             }
@@ -215,7 +212,7 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
         });
     }
 
-    private void startUCrop(){
+    private void startUCrop() {
         File outFile = new File(saveFilePath);
         //file path of cropped image
         Uri destinationUri = Uri.fromFile(outFile);
@@ -236,14 +233,15 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case UCrop.REQUEST_CROP:
                 if (resultCode == Activity.RESULT_OK) {
                     final Uri croppedUri = UCrop.getOutput(data);
                     imageUri = croppedUri;
                     mPhotoEditorView.getSource().setImageURI(Uri.EMPTY);
                     mPhotoEditorView.getSource().setImageURI(imageUri);
-                    this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, croppedUri));
+                    this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                            croppedUri));
                 } else if (resultCode == UCrop.RESULT_ERROR) {
                     final Throwable cropError = UCrop.getError(data);
                 }

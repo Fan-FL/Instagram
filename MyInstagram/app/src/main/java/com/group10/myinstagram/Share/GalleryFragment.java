@@ -47,8 +47,9 @@ public class GalleryFragment extends Fragment {
     private ArrayList<String> directories;
     private String mSelectedImage;
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
-        View view = inflater.inflate(R.layout.fragment_gallery,container,false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+            saveInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_gallery, container, false);
         galleryImages = (ImageView) view.findViewById(R.id.galleryImageView);
         gridView = (GridView) view.findViewById(R.id.gridView);
         directorySpinner = (Spinner) view.findViewById(R.id.spinnerDirectory);
@@ -72,7 +73,7 @@ public class GalleryFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to edit screen");
                 Intent intent = new Intent(getActivity(), GalleryPhotoEditorActivity.class);
-                intent.putExtra(getString(R.string.selected_image),mSelectedImage);
+                intent.putExtra(getString(R.string.selected_image), mSelectedImage);
                 startActivity(intent);
                 Log.d(TAG, "onClick: navigating edit screen");
             }
@@ -81,35 +82,35 @@ public class GalleryFragment extends Fragment {
         return view;
     }
 
-    private void init(){
+    private void init() {
         FilePath filePath = new FilePath();
 
         //check for other folder inside "/storage/emulated/0/DCIM"
         ArrayList<String> pathArray = FileSearch.getDirectoryPaths(filePath.DCIM);
-        if (pathArray != null){
+        if (pathArray != null) {
             directories.addAll(pathArray);
         }
 
         //check for other folder inside "/storage/emulated/0/picture"
 
         pathArray = FileSearch.getDirectoryPaths(filePath.PICTURES);
-        if (pathArray != null){
+        if (pathArray != null) {
             directories.addAll(pathArray);
         }
 
         //check for other folder inside "/storage/emulated/0/bluetooth"
 
         pathArray = FileSearch.getDirectoryPaths(filePath.BLUETOOTH);
-        if (pathArray != null){
+        if (pathArray != null) {
             directories.addAll(pathArray);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item,directories){
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout
+                .simple_spinner_item, directories) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent){
+            public View getView(int position, View convertView, ViewGroup parent) {
                 // Cast the grid view current item as a text view
-                TextView cell = (TextView) super.getView(position,convertView,parent);
+                TextView cell = (TextView) super.getView(position, convertView, parent);
                 cell.setHeight(50);
 
                 // Return the modified item
@@ -138,25 +139,26 @@ public class GalleryFragment extends Fragment {
     }
 
 
-    private void setupGridView(String selectedDirectory){
+    private void setupGridView(String selectedDirectory) {
         Log.d(TAG, "setupGridView: directory chosen: " + selectedDirectory);
         final ArrayList<String> imgURLs = FileSearch.getImageFilePaths(selectedDirectory);
 
         // //set the grid column width
         int gridWidth = getResources().getDisplayMetrics().widthPixels;
-        int imageWidth = gridWidth/NUM_GRID_COLUMNS;
+        int imageWidth = gridWidth / NUM_GRID_COLUMNS;
         gridView.setColumnWidth(imageWidth);
 
         //use the grid adapter to adapt the images to gridview
-        GridImageAdapter gridImageAdapter = new GridImageAdapter(getActivity(),R.layout.layout_grid_imageview,APPEND,imgURLs);
+        GridImageAdapter gridImageAdapter = new GridImageAdapter(getActivity(), R.layout
+                .layout_grid_imageview, APPEND, imgURLs);
 //        gridView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 5));
         gridView.setAdapter(gridImageAdapter);
-        if (imgURLs.isEmpty()){
+        if (imgURLs.isEmpty()) {
             return;
         }
 
         //set the first image to be displayed
-        setImage(imgURLs.get(0),galleryImages,APPEND);
+        setImage(imgURLs.get(0), galleryImages, APPEND);
         mSelectedImage = imgURLs.get(0);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -169,7 +171,7 @@ public class GalleryFragment extends Fragment {
         });
     }
 
-    private void setImage(String imgURL, ImageView image, String append){
+    private void setImage(String imgURL, ImageView image, String append) {
         Log.d(TAG, "setImage: setting image");
         ImageLoader imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
@@ -201,7 +203,6 @@ public class GalleryFragment extends Fragment {
             }
         });
     }
-
 
 
 }

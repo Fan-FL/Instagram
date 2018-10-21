@@ -1,6 +1,6 @@
-<merge xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,8 +32,8 @@
             android:id="@+id/tvfollowing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
+            android:layout_marginTop="16dp"
             android:text="@string/_180"
             android:textColor="@color/black"
             android:textSize="18sp"
@@ -54,9 +54,9 @@
             android:id="@+id/tvfollowers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
             android:text="@string/_300"
             android:textColor="@color/black"
             android:textSize="18sp"
@@ -69,8 +69,8 @@
             android:id="@+id/textfollowers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:text="@string/followers"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/textfollowing"
@@ -82,11 +82,13 @@
             android:id="@+id/textEditProfile"
             android:layout_width="133dp"
             android:layout_height="21dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            android:background="@drawable/border"
             android:text="@string/edit_your_profile"
+            android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -94,9 +96,7 @@
             app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textfollowers"
-            app:layout_constraintVertical_bias="0.024"
-            android:textAlignment="center"
-            android:background="@drawable/border"/>
+            app:layout_constraintVertical_bias="0.024" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </merge>

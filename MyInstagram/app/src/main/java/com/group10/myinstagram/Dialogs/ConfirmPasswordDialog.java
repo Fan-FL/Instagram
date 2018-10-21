@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.group10.myinstagram.R;
 
 import androidx.annotation.NonNull;
@@ -19,18 +18,14 @@ import androidx.fragment.app.DialogFragment;
 
 public class ConfirmPasswordDialog extends DialogFragment {
     private static final String TAG = "ConfirmPasswordDialog";
-
-    public interface OnConfirmPasswordListener{
-        public void onConfirmPassword(String password);
-    }
-
     OnConfirmPasswordListener mOnConfirmPasswordListener;
     TextView mPassword;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_confirm_password,container,false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.dialog_confirm_password, container, false);
         mPassword = (TextView) view.findViewById(R.id.confirm_password);
 
         Log.d(TAG, "onCreateView: started.");
@@ -42,11 +37,12 @@ public class ConfirmPasswordDialog extends DialogFragment {
                 Log.d(TAG, "onClick: captured password and confirming. ");
 
                 String password = mPassword.getText().toString();
-                if(!password.equals("")){
+                if (!password.equals("")) {
                     mOnConfirmPasswordListener.onConfirmPassword(password);
                     getDialog().dismiss();
-                }else {
-                    Toast.makeText(getActivity(),"must enter a password.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "must enter a password.", Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
         });
@@ -69,8 +65,12 @@ public class ConfirmPasswordDialog extends DialogFragment {
         super.onAttach(context);
         try {
             mOnConfirmPasswordListener = (OnConfirmPasswordListener) getTargetFragment();
-        }catch (ClassCastException e){
-            Log.e(TAG, "onAttach: ClassCastException: " + e.getMessage() );
+        } catch (ClassCastException e) {
+            Log.e(TAG, "onAttach: ClassCastException: " + e.getMessage());
         }
+    }
+
+    public interface OnConfirmPasswordListener {
+        public void onConfirmPassword(String password);
     }
 }

@@ -17,24 +17,23 @@ import androidx.viewpager.widget.ViewPager;
 
 
 public class ShareActivity extends AppCompatActivity {
-    private static final String TAG =  "ShareActivity";
-    private ViewPager mViewPaper;
-    private Context mContext = ShareActivity.this;
-
+    private static final String TAG = "ShareActivity";
     //constants
     private static final int ACTIVITY_NUM = 2;
     private static final int VERIFY_PERMISSIONS_REQUEST = 1;
+    private ViewPager mViewPaper;
+    private Context mContext = ShareActivity.this;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
-        Log.d(TAG,"onCreate: started");
+        Log.d(TAG, "onCreate: started");
 
-        if(checkPermissionArray(Permissions.PERMISSIONS)){
+        if (checkPermissionArray(Permissions.PERMISSIONS)) {
             setupViewPager();
 
-        }else {
+        } else {
             verifyPermissions(Permissions.PERMISSIONS);
         }
 
@@ -44,9 +43,10 @@ public class ShareActivity extends AppCompatActivity {
      * return the current tab numbeer
      * 0 = GalleryFragment
      * 1 = PhotoFragment
+     *
      * @return
      */
-    public int getCurrentTabNumber(){
+    public int getCurrentTabNumber() {
 
         return mViewPaper.getCurrentItem();
     }
@@ -54,7 +54,7 @@ public class ShareActivity extends AppCompatActivity {
     /**
      * setup viewpaper for manager the tabs
      */
-    private void setupViewPager(){
+    private void setupViewPager() {
         SectionPagerAdapter adapter = new SectionPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new GalleryFragment());
 //        adapter.addFragment(new Camera2BasicFragment());
@@ -72,28 +72,29 @@ public class ShareActivity extends AppCompatActivity {
 
     /**
      * verify all the permissions passed to the array
+     *
      * @param permissions
      */
     private void verifyPermissions(String[] permissions) {
         Log.d(TAG, "verifyPermissions: verifying permissions.");
 
-        ActivityCompat.requestPermissions(
-                ShareActivity.this, permissions,VERIFY_PERMISSIONS_REQUEST
-        );
+        ActivityCompat.requestPermissions(ShareActivity.this, permissions,
+                VERIFY_PERMISSIONS_REQUEST);
 
     }
 
     /**
      * Check an array of permissions
+     *
      * @param permissions
      * @return
      */
     public boolean checkPermissionArray(String[] permissions) {
         Log.d(TAG, "checkPermissionArray: checking permissions array. ");
 
-        for(int i =0; i< permissions.length; i++){
+        for (int i = 0; i < permissions.length; i++) {
             String check = permissions[i];
-            if(!checkPermission(check)){
+            if (!checkPermission(check)) {
                 return false;
             }
         }
@@ -102,6 +103,7 @@ public class ShareActivity extends AppCompatActivity {
 
     /**
      * Check a single permission is it has been verified
+     *
      * @param permission
      * @return
      */
@@ -110,10 +112,10 @@ public class ShareActivity extends AppCompatActivity {
 
         int permissionRequest = ActivityCompat.checkSelfPermission(ShareActivity.this, permission);
 
-        if(permissionRequest != PackageManager.PERMISSION_GRANTED){
+        if (permissionRequest != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "checkPermission: checkPermissions: Permission was not granted for: ");
             return false;
-        }else {
+        } else {
             Log.d(TAG, "checkPermission: checkPermissions: Permission was granted for: ");
             return true;
         }

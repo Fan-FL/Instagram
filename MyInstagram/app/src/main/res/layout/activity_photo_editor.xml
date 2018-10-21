@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/relLayout1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/relLayout1">
+        android:layout_height="wrap_content">
 
         <!-- gallery  toolbar -->
-        <include layout="@layout/snippet_top_photoeditorbar"/>
+        <include layout="@layout/snippet_top_photoeditorbar" />
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="100"
+        android:layout_below="@+id/relLayout1"
         android:orientation="vertical"
-        android:layout_below="@+id/relLayout1">
+        android:weightSum="100">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,30 +29,35 @@
                 android:id="@+id/photoEditorView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="90"/>
+                android:layout_weight="90" />
+
             <LinearLayout
+                android:id="@+id/seekbars"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_gravity="bottom"
                 android:layout_weight="10"
-                android:id="@+id/seekbars"
+                android:orientation="vertical"
                 android:visibility="gone">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/Brightness"
-                        android:gravity="end"/>
-                    <SeekBar android:id="@+id/brightnessseekbar"
+                        android:gravity="end"
+                        android:text="@string/Brightness" />
+
+                    <SeekBar
+                        android:id="@+id/brightnessseekbar"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:progress="40" android:max="100" />
+                        android:max="100"
+                        android:progress="40" />
                 </LinearLayout>
 
                 <View
@@ -64,54 +68,63 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="66dp"
                         android:layout_height="wrap_content"
                         android:gravity="end"
                         android:text="@string/Contrast" />
+
                     <SeekBar
                         android:id="@+id/contrastseekbar"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:progress="50" android:max="100" />
+                        android:max="100"
+                        android:progress="50" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+
         <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="10">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/cropButton"
-                        android:text="@string/crop"/>
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/blackWhiteButton"
-                        android:text="@string/black_white"/>
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/sharpenButton"
-                        android:text="@string/sharpen"/>
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/documentaryButton"
-                        android:text="@string/documentary"/>
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/bright_contrastButton"
-                        android:text="@string/brightness_contrast"/>
+
+                <Button
+                    android:id="@+id/cropButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/crop" />
+
+                <Button
+                    android:id="@+id/blackWhiteButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/black_white" />
+
+                <Button
+                    android:id="@+id/sharpenButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sharpen" />
+
+                <Button
+                    android:id="@+id/documentaryButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/documentary" />
+
+                <Button
+                    android:id="@+id/bright_contrastButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/brightness_contrast" />
             </LinearLayout>
         </HorizontalScrollView>
     </LinearLayout>

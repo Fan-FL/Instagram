@@ -31,8 +31,8 @@ import androidx.viewpager.widget.ViewPager;
 public class AccountSettingsActivity extends AppCompatActivity {
     private static final String TAG = "AccountSettingsActivity";
     private static final int ACTIVITY_NUM = 4;
-    private Context mContext;
     public SectionStatePagerAdapter pagerAdapter;
+    private Context mContext;
     private ViewPager mViewPager;
     private RelativeLayout mRelativeLayout;
     //firebase
@@ -47,7 +47,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accountsetting);
         mContext = AccountSettingsActivity.this;
-        Log.d(TAG,"onCreate: started. ");
+        Log.d(TAG, "onCreate: started. ");
         mViewPager = (ViewPager) findViewById(R.id.container);
         mRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout1);
 
@@ -66,37 +66,41 @@ public class AccountSettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void getIncomingIntent(){
+    private void getIncomingIntent() {
         Intent intent = getIntent();
-        if(intent.hasExtra(getString(R.string.calling_activity))){
-            Log.d(TAG, "getIncomingIntent: received incoming intent from: " + getString(R.string.profile_activity));
+        if (intent.hasExtra(getString(R.string.calling_activity))) {
+            Log.d(TAG, "getIncomingIntent: received incoming intent from: " + getString(R.string
+                    .profile_activity));
             setViewPager(pagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
         }
     }
 
-    private void setupFragments(){
+    private void setupFragments() {
         pagerAdapter = new SectionStatePagerAdapter(getSupportFragmentManager());
         //fragment 0
-        pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string.edit_profile_fragment));
+        pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string
+                .edit_profile_fragment));
         //fragment 1
         pagerAdapter.addFragment(new SignOutFragment(), getString(R.string.sign_out_fragment));
     }
 
-    public void setViewPager(int fragmentNumber){
+    public void setViewPager(int fragmentNumber) {
         mRelativeLayout.setVisibility(View.GONE);
         Log.d(TAG, "setViewPager: navigating to fragment: ");
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.setCurrentItem(fragmentNumber);
 
     }
-    private void setupSettingsList(){
+
+    private void setupSettingsList() {
         ListView listView = (ListView) findViewById(R.id.lvAccountSettings);
 
         ArrayList<String> options = new ArrayList<>();
         options.add(getString(R.string.edit_profile_fragment));//fragment 0
         options.add(getString(R.string.sign_out_fragment));//fragment 1
 
-        ArrayAdapter adapter = new ArrayAdapter(mContext, android.R.layout.simple_list_item_1,options);
+        ArrayAdapter adapter = new ArrayAdapter(mContext, android.R.layout.simple_list_item_1,
+                options);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -111,9 +115,10 @@ public class AccountSettingsActivity extends AppCompatActivity {
     /**
      * Bottom Navigation View setup
      */
-    private void setupBottomNavigationView(){
-        Log.d(TAG,"setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationView bottomNavigationViewEx = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+    private void setupBottomNavigationView() {
+        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
+        BottomNavigationView bottomNavigationViewEx = (BottomNavigationView) findViewById(R.id
+                .bottom_navigation);
         BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
 
         Menu menu = bottomNavigationViewEx.getMenu();

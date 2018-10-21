@@ -28,12 +28,13 @@ public class SignOutFragment extends Fragment {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
     private ProgressBar mProgressBar;
-    private TextView tvSignout,tvSigningOut;
+    private TextView tvSignout, tvSigningOut;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
-        View view = inflater.inflate(R.layout.fragment_signout,container,false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+            saveInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_signout, container, false);
         tvSignout = (TextView) view.findViewById(R.id.tvComfirmSignOut);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressbar);
         tvSigningOut = (TextView) view.findViewById(R.id.tvSigningOut);
@@ -66,7 +67,7 @@ public class SignOutFragment extends Fragment {
     /**
      * Setting up Firebase auth object."
      */
-    private void setupFirebaseAuth(){
+    private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
         mAuth = FirebaseAuth.getInstance();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -74,14 +75,15 @@ public class SignOutFragment extends Fragment {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if(user != null){
-                    Log.d(TAG, "onAuthStateChanged: signed_in: "+ user.getUid());
-                }else {
+                if (user != null) {
+                    Log.d(TAG, "onAuthStateChanged: signed_in: " + user.getUid());
+                } else {
                     Log.d(TAG, "onAuthStateChanged: signed_out");
                     Log.d(TAG, "onAuthStateChanged: navigating back to login screen.");
 
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent
+                            .FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }
             }
@@ -97,7 +99,7 @@ public class SignOutFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(mAuthStateListener != null){
+        if (mAuthStateListener != null) {
             mAuth.removeAuthStateListener(mAuthStateListener);
         }
     }

@@ -1,7 +1,5 @@
 package com.group10.myinstagram.Models;
 
-import android.util.Log;
-
 public class Like {
     private static final String TAG = "Like";
 
@@ -9,6 +7,10 @@ public class Like {
 
     public Like(String username) {
         this.username = username;
+    }
+
+    public Like() {
+
     }
 
     public String getUsername() {
@@ -19,28 +21,18 @@ public class Like {
         this.username = username;
     }
 
-    public Like() {
-
-    }
-
     @Override
     public String toString() {
-        return "Like{" +
-                "username='" + username + '\'' +
-                '}';
+        return "Like{" + "username='" + username + '\'' + '}';
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         Like other = (Like) obj;
-        if (! username.equals(other.username))
-            return false;
+        if (!username.equals(other.username)) return false;
         return true;
     }
 }

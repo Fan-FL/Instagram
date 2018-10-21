@@ -1,6 +1,6 @@
-<merge xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -11,28 +11,28 @@
             android:id="@+id/imageView"
             android:layout_width="141dp"
             android:layout_height="34dp"
+            android:layout_centerVertical="true"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_centerVertical="true"
             android:src="@drawable/ins_icon" />
 
         <ImageView
             android:id="@+id/btn_receive"
             android:layout_width="33dp"
             android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             app:srcCompat="@drawable/ic_bluetooth" />
 
         <ImageView
             android:id="@+id/btn_inrange"
             android:layout_width="33dp"
             android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_toLeftOf="@id/btn_receive"
             app:srcCompat="@drawable/ic_receive" />
 
@@ -40,9 +40,9 @@
             android:id="@+id/btn_location"
             android:layout_width="33dp"
             android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_toLeftOf="@id/btn_inrange"
             app:srcCompat="@drawable/ic_location" />
 
@@ -50,9 +50,9 @@
             android:id="@+id/btn_time"
             android:layout_width="33dp"
             android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_toLeftOf="@id/btn_location"
             app:srcCompat="@drawable/ic_time" />
     </RelativeLayout>

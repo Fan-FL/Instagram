@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -40,17 +39,12 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
     private int layoutResource;
     private Context mContext;
 
-    public CommentListAdapter(@NonNull Context context, @LayoutRes int resource,
-                              @NonNull List<Comment> objects) {
+    public CommentListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull
+            List<Comment> objects) {
         super(context, resource, objects);
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
         layoutResource = resource;
-    }
-
-    private static class ViewHolder{
-        TextView comment, username, timestamp;
-        CircleImageView profileImage;
     }
 
     @NonNull
@@ -59,17 +53,18 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
 
         final ViewHolder holder;
 
-        if(convertView == null){
+        if (convertView == null) {
             convertView = mInflater.inflate(layoutResource, parent, false);
             holder = new ViewHolder();
 
             holder.comment = (TextView) convertView.findViewById(R.id.comment);
             holder.username = (TextView) convertView.findViewById(R.id.comment_username);
             holder.timestamp = (TextView) convertView.findViewById(R.id.comment_time_posted);
-            holder.profileImage = (CircleImageView) convertView.findViewById(R.id.comment_profile_image);
+            holder.profileImage = (CircleImageView) convertView.findViewById(R.id
+                    .comment_profile_image);
 
             convertView.setTag(holder);
-        }else{
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
@@ -78,33 +73,31 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
 
         //set the timestamp difference
         String timestampDifference = getTimestampDifference(getItem(position));
-        if(!timestampDifference.equals("0")){
+        if (!timestampDifference.equals("0")) {
             holder.timestamp.setText(timestampDifference + " d");
-        }else{
+        } else {
             holder.timestamp.setText("today");
         }
 
         //set the username and profile image
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference
-                .child(mContext.getString(R.string.dbname_user_account_settings))
-                .orderByChild(mContext.getString(R.string.field_user_id))
-                .equalTo(getItem(position).getUser_id());
+        Query query = reference.child(mContext.getString(R.string.dbname_user_account_settings))
+                .orderByChild(mContext.getString(R.string.field_user_id)).equalTo(getItem
+                        (position).getUser_id());
         Log.d(TAG, "getView: user id:" + getItem(position).getUser_id());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for ( DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: username: " +
-                            singleSnapshot.getValue(UserAccountSettings.class).getUsername());
-                    holder.username.setText(
-                            singleSnapshot.getValue(UserAccountSettings.class).getUsername());
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, "onDataChange: username: " + singleSnapshot.getValue
+                            (UserAccountSettings.class).getUsername());
+                    holder.username.setText(singleSnapshot.getValue(UserAccountSettings.class)
+                            .getUsername());
 
                     ImageLoader imageLoader = ImageLoader.getInstance();
 
-                    imageLoader.displayImage(
-                            singleSnapshot.getValue(UserAccountSettings.class).getProfile_photo(),
-                            holder.profileImage);
+                    imageLoader.displayImage(singleSnapshot.getValue(UserAccountSettings.class)
+                            .getProfile_photo(), holder.profileImage);
                 }
 
             }
@@ -120,9 +113,10 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
 
     /**
      * Returns a string representing the number of days ago the post was made
+     *
      * @return
      */
-    private String getTimestampDifference(Comment comment){
+    private String getTimestampDifference(Comment comment) {
         Log.d(TAG, "getTimestampDifference: getting timestamp difference.");
 
         String difference = "";
@@ -133,13 +127,19 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
         sdf.format(today);
         Date timestamp;
         final String photoTimestamp = comment.getDate_created();
-        try{
+        try {
             timestamp = sdf.parse(photoTimestamp);
-            difference = String.valueOf(Math.round(((today.getTime() - timestamp.getTime()) / 1000 / 60 / 60 / 24 )));
-        }catch (ParseException e){
-            Log.e(TAG, "getTimestampDifference: ParseException: " + e.getMessage() );
+            difference = String.valueOf(Math.round(((today.getTime() - timestamp.getTime()) /
+                    1000 / 60 / 60 / 24)));
+        } catch (ParseException e) {
+            Log.e(TAG, "getTimestampDifference: ParseException: " + e.getMessage());
             difference = "0";
         }
         return difference;
+    }
+
+    private static class ViewHolder {
+        TextView comment, username, timestamp;
+        CircleImageView profileImage;
     }
 }

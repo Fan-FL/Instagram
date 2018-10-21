@@ -28,14 +28,11 @@ import android.widget.Toast;
 
 import com.group10.myinstagram.Main.MainActivity;
 import com.group10.myinstagram.R;
-import com.group10.myinstagram.Share.CameraFragment;
-import com.group10.myinstagram.Share.GalleryPhotoEditorActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,44 +44,64 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-public class ReceivePhotoActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class ReceivePhotoActivity extends AppCompatActivity implements AdapterView
+        .OnItemClickListener {
     private static final String TAG = "ReceivePhotoActivity";
+    // Intent request codes
+//    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 2;
+    private static final int REQUEST_ENABLE_BT = 3;
+    private static final String[] BLUE_PERMISSIONS = {Manifest.permission.BLUETOOTH, Manifest
+            .permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_COARSE_LOCATION};
+    /**
+     * Broadcast Receiver that detects bond state changes (Pairing status changes)
+     */
+    private final BroadcastReceiver mBondDetecter = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
+                BluetoothDevice mDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                //3 cases:
+                //case1: bonded already
+                if (mDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
+                    Log.d(TAG, "BroadcastReceiver: BOND_BONDED.");
+                }
+                //case2: creating a bone
+                if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
+                    Log.d(TAG, "BroadcastReceiver: BOND_BONDING.");
+                }
+                //case3: breaking a bond
+                if (mDevice.getBondState() == BluetoothDevice.BOND_NONE) {
+                    Log.d(TAG, "BroadcastReceiver: BOND_NONE.");
+                }
+            }
+        }
+    };
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
     public DeviceListAdapter mDeviceListAdapter;
-    private BluetoothAdapter mBluetoothAdapter;
     ListView newDevices;
+    String imageString = "";
+    private BluetoothAdapter mBluetoothAdapter;
     private Bitmap decodedByte;
     /**
      * Name of the connected device
      */
     private String mConnectedDeviceName = null;
-    String imageString = "";
-
-    // Intent request codes
-//    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
-    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 2;
-    private static final int REQUEST_ENABLE_BT = 3;
-
-    private BluetoothAdapter bluetoothAdapter;
-    private static final String[] BLUE_PERMISSIONS = {
-            Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-    };
-
     /**
      * The Handler that gets information back from the BluetoothService
      */
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Log.d(TAG, "handleMessage: receive message"+msg);
-            switch(msg.what){
+            Log.d(TAG, "handleMessage: receive message" + msg);
+            switch (msg.what) {
                 case Constants.MESSAGE_STATE_CHANGE:
                     Log.d(TAG, "state change");
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
-                            String status= "connected to " + mConnectedDeviceName;
+                            String status = "connected to " + mConnectedDeviceName;
                             setStatus(status);
                             break;
                         case BluetoothService.STATE_CONNECTING:
@@ -98,7 +115,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                     break;
                 case Constants.MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
-                    Log.d(TAG, "handleMessage: "+writeBuf);
+                    Log.d(TAG, "handleMessage: " + writeBuf);
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
                     Log.d(TAG, "write message:" + writeMessage);
@@ -107,8 +124,8 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                     // save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
                     if (null != ReceivePhotoActivity.this) {
-                        Toast.makeText(ReceivePhotoActivity.this, "Connected to "
-                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ReceivePhotoActivity.this, "Connected to " +
+                                mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case Constants.MESSAGE_READ:
@@ -117,18 +134,21 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
 
-                    if (readMessage.equals("SendingFinished")){
+                    if (readMessage.equals("SendingFinished")) {
                         Log.d(TAG, "handleMessage: finish sending ");
                         ImageView imageView = (ImageView) findViewById(R.id.receivedImage);
-                        byte[] decodedString = Base64.decode(imageString.getBytes(), Base64.DEFAULT);
-                        decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        byte[] decodedString = Base64.decode(imageString.getBytes(),
+                                Base64.DEFAULT);
+                        decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,
+                                decodedString.length);
                         imageView.setImageBitmap(decodedByte);
                         savePhoto(decodedByte);
-                        Toast.makeText(ReceivePhotoActivity.this, "Receive photo success!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ReceivePhotoActivity.this, "Receive photo success!", Toast
+                                .LENGTH_SHORT).show();
                         imageString = "";
                     } else {
                         imageString = imageString + readMessage;
-                        Log.d(TAG, "read message: "+readMessage);
+                        Log.d(TAG, "read message: " + readMessage);
                         Log.d(TAG, "allMessage: " + imageString);
                         Log.d(TAG, "message size:" + imageString.length());
                     }
@@ -139,7 +159,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
 
         }
     };
-
+    private BluetoothAdapter bluetoothAdapter;
     /**
      * Member object for the chat services
      */
@@ -148,52 +168,25 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
      * String buffer for outgoing messages
      */
     private StringBuffer mOutStringBuffer;
-
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             Log.d(TAG, "onReceive: ACTION FOUND.");
 
-            if (action.equals(BluetoothDevice.ACTION_FOUND)){
-                BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
+            if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 boolean added = false;
-                for (BluetoothDevice bluetoothDevice: mBTDevices){
-                    if (device.equals(bluetoothDevice)){
+                for (BluetoothDevice bluetoothDevice : mBTDevices) {
+                    if (device.equals(bluetoothDevice)) {
                         added = true;
                     }
                 }
-                if (!added)
-                    mBTDevices.add(device);
+                if (!added) mBTDevices.add(device);
                 Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
-                mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
+                mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view,
+                        mBTDevices);
                 newDevices.setAdapter(mDeviceListAdapter);
-            }
-        }
-    };
-    /**
-     * Broadcast Receiver that detects bond state changes (Pairing status changes)
-     */
-    private final BroadcastReceiver mBondDetecter = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)){
-                BluetoothDevice mDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                //3 cases:
-                //case1: bonded already
-                if (mDevice.getBondState() == BluetoothDevice.BOND_BONDED){
-                    Log.d(TAG, "BroadcastReceiver: BOND_BONDED.");
-                }
-                //case2: creating a bone
-                if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
-                    Log.d(TAG, "BroadcastReceiver: BOND_BONDING.");
-                }
-                //case3: breaking a bond
-                if (mDevice.getBondState() == BluetoothDevice.BOND_NONE) {
-                    Log.d(TAG, "BroadcastReceiver: BOND_NONE.");
-                }
             }
         }
     };
@@ -208,7 +201,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
 
         Button btnScanDevices = (Button) findViewById(R.id.btn_scan_devices);
 
-        btnScanDevices.setOnClickListener(new View.OnClickListener(){
+        btnScanDevices.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Log.d(TAG, "onClick: scan devices");
                 scanDevices();
@@ -218,7 +211,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
 
         Button btnFinish = (Button) findViewById(R.id.btn_finish);
 
-        btnFinish.setOnClickListener(new View.OnClickListener(){
+        btnFinish.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Log.d(TAG, "onClick: finish");
                 unregisterReceiver(mBroadcastReceiver);
@@ -275,7 +268,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
         }
     }
 
-    private void scanDevices(){
+    private void scanDevices() {
         mBTDevices = new ArrayList<>();
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -283,18 +276,19 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                 final String action = intent.getAction();
                 Log.d(TAG, "onReceive: ACTION FOUND.");
 
-                if (action.equals(BluetoothDevice.ACTION_FOUND)){
-                    BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
+                if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice
+                            .EXTRA_DEVICE);
                     boolean added = false;
-                    for (BluetoothDevice bluetoothDevice: mBTDevices){
-                        if (device.equals(bluetoothDevice)){
+                    for (BluetoothDevice bluetoothDevice : mBTDevices) {
+                        if (device.equals(bluetoothDevice)) {
                             added = true;
                         }
                     }
-                    if (!added)
-                        mBTDevices.add(device);
+                    if (!added) mBTDevices.add(device);
                     Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
-                    mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
+                    mDeviceListAdapter = new DeviceListAdapter(context, R.layout
+                            .device_adapter_view, mBTDevices);
                     newDevices.setAdapter(mDeviceListAdapter);
                 }
             }
@@ -304,7 +298,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mBondDetecter, filter);
 
-        if(mBluetoothAdapter.isDiscovering()){
+        if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
             Log.d(TAG, "btnDiscover: Canceling discovery.");
 
@@ -315,7 +309,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(mBroadcastReceiver, discoverDevicesIntent);
         }
-        if(!mBluetoothAdapter.isDiscovering()){
+        if (!mBluetoothAdapter.isDiscovering()) {
 
             //check BT permissions in manifest
             checkBTPermissions();
@@ -328,21 +322,25 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
 
     /**
      * This method is required for all devices running API23+
-     * Android must programmatically check the permissions for bluetooth. Putting the proper permissions
+     * Android must programmatically check the permissions for bluetooth. Putting the proper
+     * permissions
      * in the manifest is not enough.
-     *
+     * <p>
      * NOTE: This will only execute on versions > LOLLIPOP because it is not needed otherwise.
      */
     private void checkBTPermissions() {
         Log.d(TAG, "checkBTPermissions");
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-            int permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
-            permissionCheck += this.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            int permissionCheck = this.checkSelfPermission("Manifest.permission" +
+                    ".ACCESS_FINE_LOCATION");
+            permissionCheck += this.checkSelfPermission("Manifest.permission" +
+                    ".ACCESS_COARSE_LOCATION");
             if (permissionCheck != 0) {
                 Log.d(TAG, "request BT permissions");
-                this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
+                this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
             }
-        }else{
+        } else {
             Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
         }
     }
@@ -375,7 +373,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
 
     //Bluetooth
 
-    public void startBluetoothSensor(){
+    public void startBluetoothSensor() {
 
         // This only targets API 23+
         // check permission using a thousand lines (Google is naive!)
@@ -388,22 +386,20 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        if (bluetoothAdapter == null)
-        {
+        if (bluetoothAdapter == null) {
             Log.d(TAG, "Device has no bluetooth");
             return;
         }
 
         // ask users to open bluetooth
-        if (bluetoothAdapter.isEnabled()==false){
+        if (bluetoothAdapter.isEnabled() == false) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
 
         // make this device visible to others for 3000 seconds
-        Intent discoverableIntent = new
-                Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 3000);
         startActivity(discoverableIntent);
     }
@@ -414,12 +410,14 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
         Log.d(TAG, "Request bluetooth permissions");
         List<String> listPermissionsNeeded = new ArrayList<>();
         for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager
+                    .PERMISSION_GRANTED) {
                 listPermissionsNeeded.add(permission);
             }
         }
         if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_BLUETOOTH_PERMISSIONS);
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new
+                    String[listPermissionsNeeded.size()]), REQUEST_BLUETOOTH_PERMISSIONS);
         }
     }
 
@@ -449,8 +447,8 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
     private boolean hasPermissionsGranted(String[] permissions) {
         Log.d(TAG, "Check permission granted");
         for (String permission : permissions) {
-            if (ActivityCompat.checkSelfPermission(this, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager
+                    .PERMISSION_GRANTED) {
                 return false;
             }
         }
@@ -464,7 +462,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
      * @param resId a string resource ID
      */
     private void setStatus(int resId) {
-        TextView status = (TextView)findViewById(R.id.receive_status);
+        TextView status = (TextView) findViewById(R.id.receive_status);
         status.setText(resId);
     }
 
@@ -474,11 +472,11 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
      * @param subTitle status
      */
     private void setStatus(CharSequence subTitle) {
-        TextView status = (TextView)findViewById(R.id.receive_status);
+        TextView status = (TextView) findViewById(R.id.receive_status);
         status.setText(subTitle);
     }
 
-    private void savePhoto(Bitmap bitmap){
+    private void savePhoto(Bitmap bitmap) {
         String path = Environment.getExternalStorageDirectory() + "/DCIM/MyInstagram/Bluetooth/";
         File folder = new File(path);
         if (!folder.exists()) {
@@ -497,7 +495,8 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
             fos.write(byteArray, 0, byteArray.length);
             File file = new File(fileName);
             Uri uri = Uri.fromFile(file);
-            ReceivePhotoActivity.this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+            ReceivePhotoActivity.this.sendBroadcast(new Intent(Intent
+                    .ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

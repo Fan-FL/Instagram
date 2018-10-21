@@ -15,7 +15,7 @@ public class SectionPagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = "SectionPagerAdapter";
     private final List<Fragment> mFragmentList = new ArrayList<>();
 
-    public SectionPagerAdapter(FragmentManager fm){
+    public SectionPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -28,7 +28,8 @@ public class SectionPagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return mFragmentList.size();
     }
-    public void addFragment(Fragment fragment){
+
+    public void addFragment(Fragment fragment) {
         mFragmentList.add(fragment);
     }
 

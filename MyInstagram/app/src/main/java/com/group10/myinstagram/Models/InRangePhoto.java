@@ -5,18 +5,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class InRangePhoto implements Parcelable {
-    Bitmap bitmap;
-
-    public InRangePhoto() {}
-
-    public InRangePhoto(Bitmap bitmap) {
-        this.bitmap = bitmap;
-    }
-
-    protected InRangePhoto(Parcel in) {
-        bitmap = in.readParcelable(Bitmap.class.getClassLoader());
-    }
-
     public static final Creator<InRangePhoto> CREATOR = new Creator<InRangePhoto>() {
         @Override
         public InRangePhoto createFromParcel(Parcel in) {
@@ -28,6 +16,18 @@ public class InRangePhoto implements Parcelable {
             return new InRangePhoto[size];
         }
     };
+    Bitmap bitmap;
+
+    public InRangePhoto() {
+    }
+
+    public InRangePhoto(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
+
+    protected InRangePhoto(Parcel in) {
+        bitmap = in.readParcelable(Bitmap.class.getClassLoader());
+    }
 
     public Bitmap getBitmap() {
         return bitmap;
@@ -39,9 +39,7 @@ public class InRangePhoto implements Parcelable {
 
     @Override
     public String toString() {
-        return "InRangePhoto{" +
-                "bitmap=" + bitmap +
-                '}';
+        return "InRangePhoto{" + "bitmap=" + bitmap + '}';
     }
 
     @Override

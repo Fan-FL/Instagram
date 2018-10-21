@@ -20,69 +20,67 @@ public class UniversalImageLoader {
     private static final int defaultImage = R.drawable.ic_android;
     private Context mContext;
 
-    public UniversalImageLoader(Context context){
+    public UniversalImageLoader(Context context) {
         mContext = context;
-    }
-
-    public ImageLoaderConfiguration getConfig(){
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(defaultImage)
-                .showImageForEmptyUri(defaultImage)
-                .showImageOnFail(defaultImage)
-                .cacheOnDisk(true).cacheInMemory(true)
-                .cacheOnDisk(true).resetViewBeforeLoading(true)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .displayer(new FadeInBitmapDisplayer(300)).build();
-
-        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(mContext)
-                .defaultDisplayImageOptions(defaultOptions)
-                .memoryCache(new WeakMemoryCache())
-                .diskCacheSize(100 * 1024 * 1024).build();
-        return configuration;
     }
 
     /**
      * this method can be used to set images that are static.
      * It cannot be used if the images are bing changed in the Fragment/Activity
      * - or if they are being set in a list or a grid
+     *
      * @param imgURL
      * @param image
      * @param mProgressBar
      * @param append
      */
-    public static void setImage(String imgURL, ImageView image, final ProgressBar mProgressBar, String append){
+    public static void setImage(String imgURL, ImageView image, final ProgressBar mProgressBar,
+                                String append) {
 
         ImageLoader imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(image.getContext()));
         imageLoader.displayImage(append + imgURL, image, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
-                if(mProgressBar != null){
+                if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                if(mProgressBar != null){
+                if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                if(mProgressBar != null){
+                if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
-                if(mProgressBar != null){
+                if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.GONE);
                 }
             }
         });
+    }
+
+    public ImageLoaderConfiguration getConfig() {
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder().showImageOnLoading
+                (defaultImage).showImageForEmptyUri(defaultImage).showImageOnFail(defaultImage)
+                .cacheOnDisk(true).cacheInMemory(true).cacheOnDisk(true).resetViewBeforeLoading
+                        (true).imageScaleType(ImageScaleType.EXACTLY).displayer(new
+                        FadeInBitmapDisplayer(300)).build();
+
+        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(mContext)
+                .defaultDisplayImageOptions(defaultOptions).memoryCache(new WeakMemoryCache())
+                .diskCacheSize(100 * 1024 * 1024).build();
+        return configuration;
     }
 }
 

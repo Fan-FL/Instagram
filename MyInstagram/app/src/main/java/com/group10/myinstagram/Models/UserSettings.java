@@ -32,9 +32,6 @@ public class UserSettings {
 
     @Override
     public String toString() {
-        return "UserSettings{" +
-                "user=" + user +
-                ", settings=" + settings +
-                '}';
+        return "UserSettings{" + "user=" + user + ", settings=" + settings + '}';
     }
 }

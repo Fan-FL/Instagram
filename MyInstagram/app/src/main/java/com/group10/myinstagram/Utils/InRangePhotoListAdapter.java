@@ -6,10 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import com.group10.myinstagram.Models.InRangePhoto;
-import com.group10.myinstagram.Models.User;
 import com.group10.myinstagram.R;
 
 import java.util.List;
@@ -17,7 +15,6 @@ import java.util.List;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class InRangePhotoListAdapter extends ArrayAdapter<InRangePhoto> {
 
@@ -28,16 +25,13 @@ public class InRangePhotoListAdapter extends ArrayAdapter<InRangePhoto> {
     private int layoutResource;
     private Context mContext;
 
-    public InRangePhotoListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<InRangePhoto> objects) {
+    public InRangePhotoListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull
+            List<InRangePhoto> objects) {
         super(context, resource, objects);
         mContext = context;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutResource = resource;
         this.mPhotos = objects;
-    }
-
-    private static class ViewHolder{
-        SquareImageView inrangeImage;
     }
 
     @NonNull
@@ -62,5 +56,9 @@ public class InRangePhotoListAdapter extends ArrayAdapter<InRangePhoto> {
         holder.inrangeImage.setImageBitmap(getItem(position).getBitmap());
 
         return convertView;
+    }
+
+    private static class ViewHolder {
+        SquareImageView inrangeImage;
     }
 }

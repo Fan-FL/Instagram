@@ -15,8 +15,10 @@ public class FilePath {
 
     //    public String PICTURES = ROOT_DIR + "/Pictures";
 //    public String PICTURES  = android.os.Environment.DIRECTORY_DCIM;
-    public String DCIM  = Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/";
-    public String PICTURES  = Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_PICTURES + "/";
+    public String DCIM = Environment.getExternalStorageDirectory() + "/" + Environment
+            .DIRECTORY_DCIM + "/";
+    public String PICTURES = Environment.getExternalStorageDirectory() + "/" + Environment
+            .DIRECTORY_PICTURES + "/";
     public String BLUETOOTH = Environment.getExternalStorageDirectory() + "/" + "bluetooth/";
 
     public String CAMERA = ROOT_DIR + "/DCIM/Camera";

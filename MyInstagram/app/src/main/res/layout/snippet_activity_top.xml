@@ -1,41 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/border"
-        >
+        android:background="@drawable/border">
 
         <Toolbar
+            android:id="@+id/activity_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/activity_toolbar">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/tvNews"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Notification"
-                    android:textSize="20sp"
-                    android:textColor="@color/black"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:id="@+id/tvNews"
-                    />
-
-
+                    android:text="Notification"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
 
 
             </RelativeLayout>
 
 
         </Toolbar>
-
 
 
     </com.google.android.material.appbar.AppBarLayout>

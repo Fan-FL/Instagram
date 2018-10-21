@@ -7,6 +7,17 @@ import java.util.List;
 
 public class Photo implements Parcelable {
 
+    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
+        @Override
+        public Photo createFromParcel(Parcel in) {
+            return new Photo(in);
+        }
+
+        @Override
+        public Photo[] newArray(int size) {
+            return new Photo[size];
+        }
+    };
     private String caption;
     private String date_created;
     private String image_path;
@@ -18,7 +29,9 @@ public class Photo implements Parcelable {
     private double longitude;
     private double latitude;
 
-    public Photo(String caption, String date_created, String image_path, String photo_id, String user_id, String tags, List<Like> likes, List<Comment> comments, double longitude, double latitude) {
+    public Photo(String caption, String date_created, String image_path, String photo_id, String
+            user_id, String tags, List<Like> likes, List<Comment> comments, double longitude,
+                 double latitude) {
         this.caption = caption;
         this.date_created = date_created;
         this.image_path = image_path;
@@ -31,29 +44,12 @@ public class Photo implements Parcelable {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
-        return longitude;
-
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public Photo() {
 
     }
 
-    public Photo(String caption, String date_created, String image_path, String photo_id,
-                 String user_id, String tags, List<Like> likes, List<Comment> comments) {
+    public Photo(String caption, String date_created, String image_path, String photo_id, String
+            user_id, String tags, List<Like> likes, List<Comment> comments) {
         this.caption = caption;
         this.date_created = date_created;
         this.image_path = image_path;
@@ -73,6 +69,27 @@ public class Photo implements Parcelable {
         tags = in.readString();
     }
 
+    public static Creator<Photo> getCREATOR() {
+        return CREATOR;
+    }
+
+    public double getLongitude() {
+        return longitude;
+
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(caption);
@@ -88,28 +105,12 @@ public class Photo implements Parcelable {
         return 0;
     }
 
-    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
-        @Override
-        public Photo createFromParcel(Parcel in) {
-            return new Photo(in);
-        }
-
-        @Override
-        public Photo[] newArray(int size) {
-            return new Photo[size];
-        }
-    };
-
     public List<Comment> getComments() {
         return comments;
     }
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
-    }
-
-    public static Creator<Photo> getCREATOR() {
-        return CREATOR;
     }
 
     public String getCaption() {
@@ -170,14 +171,8 @@ public class Photo implements Parcelable {
 
     @Override
     public String toString() {
-        return "Photo{" +
-                "caption='" + caption + '\'' +
-                ", date_created='" + date_created + '\'' +
-                ", image_path='" + image_path + '\'' +
-                ", photo_id='" + photo_id + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", tags='" + tags + '\'' +
-                ", likes=" + likes +
-                '}';
+        return "Photo{" + "caption='" + caption + '\'' + ", date_created='" + date_created + '\''
+                + ", image_path='" + image_path + '\'' + ", photo_id='" + photo_id + '\'' + ", " +
+                "user_id='" + user_id + '\'' + ", tags='" + tags + '\'' + ", likes=" + likes + '}';
     }
 }

@@ -2,7 +2,6 @@ package com.group10.myinstagram.Utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -18,11 +17,12 @@ import androidx.annotation.NonNull;
 public class BottomNavigationViewHelper {
     private static final String TAG = "BottomNavViewHelper";
 
-    public static void enableNavigation(final Context context, BottomNavigationView view){
-        view.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+    public static void enableNavigation(final Context context, BottomNavigationView view) {
+        view.setOnNavigationItemSelectedListener(new BottomNavigationView
+                .OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()){
+                switch (menuItem.getItemId()) {
                     case R.id.ic_home://ACTIVITY_NUM = 0
                         Intent intent1 = new Intent(context, MainActivity.class);
                         context.startActivity(intent1);

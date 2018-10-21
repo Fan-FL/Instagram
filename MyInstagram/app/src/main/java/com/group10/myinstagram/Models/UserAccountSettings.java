@@ -2,10 +2,20 @@ package com.group10.myinstagram.Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class UserAccountSettings implements Parcelable {
 
+    public static final Creator<UserAccountSettings> CREATOR = new Creator<UserAccountSettings>() {
+        @Override
+        public UserAccountSettings createFromParcel(Parcel in) {
+            return new UserAccountSettings(in);
+        }
+
+        @Override
+        public UserAccountSettings[] newArray(int size) {
+            return new UserAccountSettings[size];
+        }
+    };
     private String description;
     private String display_name;
     private long followers;
@@ -16,9 +26,9 @@ public class UserAccountSettings implements Parcelable {
     private String website;
     private String user_id;
 
-    public UserAccountSettings(String description, String display_name, long followers,
-                               long following, long posts, String profile_photo, String username,
-                               String website, String user_id) {
+    public UserAccountSettings(String description, String display_name, long followers, long
+            following, long posts, String profile_photo, String username, String website, String
+            user_id) {
         this.description = description;
         this.display_name = display_name;
         this.followers = followers;
@@ -45,18 +55,6 @@ public class UserAccountSettings implements Parcelable {
         website = in.readString();
         user_id = in.readString();
     }
-
-    public static final Creator<UserAccountSettings> CREATOR = new Creator<UserAccountSettings>() {
-        @Override
-        public UserAccountSettings createFromParcel(Parcel in) {
-            return new UserAccountSettings(in);
-        }
-
-        @Override
-        public UserAccountSettings[] newArray(int size) {
-            return new UserAccountSettings[size];
-        }
-    };
 
     public String getUser_id() {
         return user_id;
@@ -133,16 +131,10 @@ public class UserAccountSettings implements Parcelable {
 
     @Override
     public String toString() {
-        return "UserAccountSettings{" +
-                "description='" + description + '\'' +
-                ", display_name='" + display_name + '\'' +
-                ", followers=" + followers +
-                ", following=" + following +
-                ", posts=" + posts +
-                ", profile_photo='" + profile_photo + '\'' +
-                ", username='" + username + '\'' +
-                ", website='" + website + '\'' +
-                '}';
+        return "UserAccountSettings{" + "description='" + description + '\'' + ", display_name='"
+                + display_name + '\'' + ", followers=" + followers + ", following=" + following +
+                ", posts=" + posts + ", profile_photo='" + profile_photo + '\'' + ", username='"
+                + username + '\'' + ", website='" + website + '\'' + '}';
     }
 
     @Override
