@@ -28,6 +28,10 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * This class is used for handle the notification activity of a user
+ * It shows the list view of users following message and like message
+ */
 public class NotificationActivity extends AppCompatActivity {
     private static final String TAG = "NotificationActivity";
     private static final int ACTIVITY_NUM = 3;
@@ -51,6 +55,9 @@ public class NotificationActivity extends AppCompatActivity {
         getNotification();
     }
 
+    /**
+     * get all notification from the database
+     */
     private void getNotification() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         Query query = reference.child(getString(R.string.dbname_notification)).child(FirebaseAuth
@@ -75,6 +82,9 @@ public class NotificationActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * update the notification list view with the notification from database
+     */
     private void updateNotificationList() {
         Log.d(TAG, "updateUsersList: updating users list");
 
@@ -92,6 +102,9 @@ public class NotificationActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * set up the navigation bar
+     */
     private void setupBottomNavigationView() {
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id

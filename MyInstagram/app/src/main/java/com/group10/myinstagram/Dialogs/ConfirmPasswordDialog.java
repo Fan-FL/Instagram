@@ -16,6 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+/**
+ * This class used to handle the confirmation dialog shows in profile edit view.
+ */
 public class ConfirmPasswordDialog extends DialogFragment {
     private static final String TAG = "ConfirmPasswordDialog";
     OnConfirmPasswordListener mOnConfirmPasswordListener;

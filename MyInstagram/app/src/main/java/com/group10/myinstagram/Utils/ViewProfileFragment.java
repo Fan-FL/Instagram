@@ -45,9 +45,10 @@ import androidx.fragment.app.Fragment;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by User on 6/29/2017.
+ * This class is used to handle the view profile fragment
+ * It shows the user followings, followers and other information
+ * It also shows the photos that this user posted
  */
-
 public class ViewProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
@@ -502,16 +503,13 @@ public class ViewProfileFragment extends Fragment {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
-                // ...
             }
         };
 
 
     }
 
-      /*
-    ------------------------------------ Firebase ---------------------------------------------
-     */
+     // firebase
 
     @Override
     public void onStart() {

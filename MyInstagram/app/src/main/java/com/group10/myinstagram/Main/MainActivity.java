@@ -56,6 +56,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentTransaction;
 
+/**
+ * This class used to show all posts that a user following to a list view.
+ * And also it has a tool bar for different sorting methods and bluetooth swipe photo.
+ * At the bottom is a navigation bar to switch different views.
+ */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final int ACTIVITY_NUM = 0;
@@ -156,6 +161,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * get the file path for local in range images.
+     */
     private void getAllFilePath() {
         mfileNames = new ArrayList<>();
         String path = Environment.getExternalStorageDirectory() + "/DCIM/MyInstagram/Bluetooth/";
@@ -169,6 +177,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * open the comments fragment when clicking the comments icon or text.
+     * @param photo
+     * @param callingActivity
+     */
     public void onCommentThreadSelected(Photo photo, String callingActivity) {
         Log.d(TAG, "onCommentThreadSelected: selected a comment thread");
 
@@ -184,6 +197,9 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    /**
+     * hide the main activity layout
+     */
     public void hideLayout() {
         Log.d(TAG, "hideLayout: hiding layout");
         mRelativeLayout.setVisibility(View.GONE);
@@ -191,17 +207,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * show the main activity layout
+     */
     public void showLayout() {
         Log.d(TAG, "hideLayout: showing layout");
         mRelativeLayout.setVisibility(View.VISIBLE);
         mFrameLayout.setVisibility(View.GONE);
     }
 
+    /**
+     * initialize the image loader
+     */
     private void initImageLoader() {
         UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
+    /**
+     * get the following users of the current user
+     */
     private void getFollowing() {
         Log.d(TAG, "getFollowing: searching for following");
 
@@ -232,6 +257,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * get the photos of current user and the photos of following users of the current user.
+     */
     private void getPhotos() {
         Log.d(TAG, "getPhotos: getting photos");
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
@@ -310,6 +338,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * get the location of the current user
+     */
     private void getLocation() {
         Log.d(TAG, "getUserLocation: get current user location.");
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
@@ -334,6 +365,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * display all photos to the list view
+     * it has two sort modes, 0 - by time, 1 - by location
+     * @param sortMode
+     */
     private void displayPhotos(int sortMode) {
         if (sortMode == 0) {
             // sort by time
@@ -372,6 +408,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * get the distance of two location
+     * @param longitude1
+     * @param latitude1
+     * @param longitude2
+     * @param latitude2
+     * @return
+     */
     public double getDistance(double longitude1, double latitude1, double longitude2, double
             latitude2) {
         double Lat1 = rad(latitude1);
@@ -440,6 +484,10 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    /**
+     * Update the location of the current user by data get from the location service.
+     * @param user
+     */
     private void updateLocation(FirebaseUser user) {
         if (checkPermissionArray(Permissions.PERMISSIONS)) {
             Location location = LocationHelper.getLocation(user, mContext);
