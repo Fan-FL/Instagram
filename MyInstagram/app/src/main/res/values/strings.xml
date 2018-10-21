@@ -83,7 +83,17 @@
     <string name="request_permission">Needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="selected_bitmap">selected_bitmap</string>
+    <string name="received_image">received_image</string>
+
+    <!--  BluetoothChat -->
+    <string name="send">Send</string>
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
+    <string name="title_connecting">connecting...</string>
+    <string name="title_connected_to">connected</string>
+    <string name="title_not_connected">not connected</string>
     <string name="bluetooth_share">BT share</string>
+
 
 
 </resources>
