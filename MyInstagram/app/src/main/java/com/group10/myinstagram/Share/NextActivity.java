@@ -93,14 +93,14 @@ public class NextActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: share photo via bluetooth");
-                Intent intent = new Intent(NextActivity.this, SendPhotoActivity.class);
+                Intent nextIntent = new Intent(NextActivity.this, SendPhotoActivity.class);
 
                 if (intent.hasExtra(getString(R.string.selected_image))) {
                     imgUrl = intent.getStringExtra(getString(R.string.selected_image));
                 }
                 Log.d(TAG, "send image via bluetooth:"+ imgUrl);
-                intent.putExtra(getString(R.string.selected_image), imgUrl);
-                startActivity(intent);
+                nextIntent.putExtra(getString(R.string.selected_image), imgUrl);
+                startActivity(nextIntent);
             }
         });
     }
