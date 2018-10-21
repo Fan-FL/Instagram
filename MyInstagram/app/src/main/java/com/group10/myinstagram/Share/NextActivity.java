@@ -100,7 +100,6 @@ public class NextActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "send image via bluetooth:"+ imgUrl);
                 intent.putExtra(getString(R.string.selected_image), imgUrl);
-
                 startActivity(intent);
             }
         });
