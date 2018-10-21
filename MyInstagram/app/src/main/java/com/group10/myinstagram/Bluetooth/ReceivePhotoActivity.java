@@ -10,8 +10,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Base64;
@@ -26,8 +28,17 @@ import android.widget.Toast;
 
 import com.group10.myinstagram.Main.MainActivity;
 import com.group10.myinstagram.R;
+import com.group10.myinstagram.Share.CameraFragment;
+import com.group10.myinstagram.Share.GalleryPhotoEditorActivity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -112,6 +123,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                         byte[] decodedString = Base64.decode(imageString.getBytes(), Base64.DEFAULT);
                         decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         imageView.setImageBitmap(decodedByte);
+                        savePhoto(decodedByte);
                         Toast.makeText(ReceivePhotoActivity.this, "Receive photo success!", Toast.LENGTH_SHORT).show();
                         imageString = "";
                     } else {
@@ -215,7 +227,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                     mChatService.stop();
                 }
                 Intent newIntent = new Intent(ReceivePhotoActivity.this, MainActivity.class);
-                newIntent.putExtra(getString(R.string.received_image), decodedByte);
+//                newIntent.putExtra(getString(R.string.received_image), decodedByte);
                 Log.d(TAG, "onClick: send image: " + decodedByte.getByteCount());
                 startActivity(newIntent);
 
@@ -464,5 +476,38 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
     private void setStatus(CharSequence subTitle) {
         TextView status = (TextView)findViewById(R.id.receive_status);
         status.setText(subTitle);
+    }
+
+    private void savePhoto(Bitmap bitmap){
+        String path = Environment.getExternalStorageDirectory() + "/DCIM/MyInstagram/Bluetooth/";
+        File folder = new File(path);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String fileName = path + "IMG_" + timeStamp + ".jpg";
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(fileName);
+            fos.write(byteArray, 0, byteArray.length);
+            File file = new File(fileName);
+            Uri uri = Uri.fromFile(file);
+            ReceivePhotoActivity.this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
