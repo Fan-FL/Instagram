@@ -49,6 +49,8 @@
     <string name="field_timestamp">timestamp</string>
     <string name="field_followers">followers</string>
     <string name="field_following">following</string>
+    <string name="field_longitude">longitude</string>
+    <string name="field_latitude">latitude</string>
 
     <!-- Action -->
     <string name="action_follow">follow</string>
