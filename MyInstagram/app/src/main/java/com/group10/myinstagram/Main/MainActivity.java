@@ -45,6 +45,7 @@ import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
 import com.group10.myinstagram.Utils.LocationHelper;
 import com.group10.myinstagram.Utils.Permissions;
 import com.group10.myinstagram.Utils.UniversalImageLoader;
+import com.group10.myinstagram.Utils.UserSuggest;
 import com.group10.myinstagram.Utils.UserfeedListAdapter;
 import com.group10.myinstagram.Utils.ViewCommentsFragment;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -306,6 +307,7 @@ public class MainActivity extends AppCompatActivity {
                             .child(user.getUid())
                             .child(getString(R.string.field_latitude))
                             .setValue(144.9631);
+                UserSuggest userSuggest = new UserSuggest(this, 37.8136, 144.9631);
             }else {
                 DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
                 mReference.child(getString(R.string.dbname_users))
@@ -316,7 +318,9 @@ public class MainActivity extends AppCompatActivity {
                         .child(user.getUid())
                         .child(getString(R.string.field_latitude))
                         .setValue(location.getLatitude());
+                UserSuggest userSuggest = new UserSuggest(this, location.getLongitude(), location.getLatitude());
             }
+
         }else {
             verifyPermissions(Permissions.PERMISSIONS);
         }
