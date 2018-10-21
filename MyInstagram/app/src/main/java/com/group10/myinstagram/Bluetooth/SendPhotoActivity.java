@@ -79,10 +79,6 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView
         }
     };
     private Context mContext = SendPhotoActivity.this;
-
-    //bluetooth
-//    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 1;
-//    private static final int REQUEST_ENABLE_BT = 2;
     private BluetoothAdapter mBluetoothAdapter;
     private Intent intent;
     private String imgUrl;
@@ -288,6 +284,9 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView
         }
     }
 
+    /**
+     * scan for all bluetooth devices
+     */
     private void scanDevices() {
         mBTDevices = new ArrayList<>();
         mBroadcastReceiver = new BroadcastReceiver() {
@@ -377,13 +376,6 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView
         Log.d(TAG, "onItemClick: deviceName = " + deviceName);
         Log.d(TAG, "onItemClick: deviceAddress = " + deviceAddress);
 
-        //create the bond.
-        //NOTE: Requires API 17+? I think this is JellyBean
-//        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
-//            Log.d(TAG, "Trying to pair with " + deviceName);
-//            mBTDevices.get(position).createBond();
-//        }
-
         if (mChatService == null) {
             // Initialize the BluetoothService to perform bluetooth connections
             mChatService = new BluetoothService(SendPhotoActivity.this, mHandler);
@@ -399,7 +391,6 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView
     }
 
     //Bluetooth
-
     public void startBluetoothSensor() {
 
         // This only targets API 23+
@@ -432,7 +423,6 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView
     }
 
     // check if app has a list of permissions, then request not-granted ones
-
     public void requestBluePermissions(String[] permissions) {
         Log.d(TAG, "Request bluetooth permissions");
         List<String> listPermissionsNeeded = new ArrayList<>();
@@ -503,6 +493,10 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView
         status.setText(subTitle);
     }
 
+    /**
+     * get the base64 string of the photo
+     * @return the base64 string
+     */
     private String getPhoto() {
         Intent intent = getIntent();
         if (intent.hasExtra(getString(R.string.selected_image))) {
@@ -516,6 +510,11 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView
         return imageString;
     }
 
+    /**
+     * convert a image file to bytes
+     * @param file
+     * @return
+     */
     public String imageFileToByte(File file) {
         Log.d(TAG, "imageFileToByte");
         Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
@@ -555,6 +554,10 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView
         }
     }
 
+    /**
+     * send the selected photo via bluetooth
+     * @throws InterruptedException
+     */
     private void sendPhoto() throws InterruptedException {
         sendMessage(getPhoto());
         Thread.sleep(1000);

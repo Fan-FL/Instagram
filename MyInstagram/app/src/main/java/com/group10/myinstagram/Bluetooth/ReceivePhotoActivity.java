@@ -48,7 +48,6 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
         .OnItemClickListener {
     private static final String TAG = "ReceivePhotoActivity";
     // Intent request codes
-//    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_BLUETOOTH_PERMISSIONS = 2;
     private static final int REQUEST_ENABLE_BT = 3;
     private static final String[] BLUE_PERMISSIONS = {Manifest.permission.BLUETOOTH, Manifest
@@ -236,7 +235,6 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         newDevices = (ListView) findViewById(R.id.newDevices);
         newDevices.setOnItemClickListener(ReceivePhotoActivity.this);
-//        mBTDevices = new ArrayList<>();
         scanDevices();
     }
 
@@ -268,6 +266,9 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
         }
     }
 
+    /**
+     * scan for all bluetooth devices
+     */
     private void scanDevices() {
         mBTDevices = new ArrayList<>();
         mBroadcastReceiver = new BroadcastReceiver() {
@@ -372,7 +373,6 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
     }
 
     //Bluetooth
-
     public void startBluetoothSensor() {
 
         // This only targets API 23+
@@ -476,6 +476,10 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
         status.setText(subTitle);
     }
 
+    /**
+     * save the received photo to local
+     * @param bitmap the bitmap of received photo
+     */
     private void savePhoto(Bitmap bitmap) {
         String path = Environment.getExternalStorageDirectory() + "/DCIM/MyInstagram/Bluetooth/";
         File folder = new File(path);

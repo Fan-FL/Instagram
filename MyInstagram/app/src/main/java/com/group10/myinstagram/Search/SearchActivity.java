@@ -42,7 +42,6 @@ public class SearchActivity extends AppCompatActivity {
     private Context mContext = SearchActivity.this;
     //widgets
     private EditText mSearchParam;
-    private ListView mListView;
     private ListView mRecommendListView;
 
     //vars
@@ -57,7 +56,6 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         mSearchParam = (EditText) findViewById(R.id.search);
-        mListView = (ListView) findViewById(R.id.listView);
         mRecommendListView = (ListView) findViewById(R.id.lvRecommend);
         Log.d(TAG, "onCreate: started");
 
@@ -192,9 +190,9 @@ public class SearchActivity extends AppCompatActivity {
         mAdapter = new UserListAdapter(SearchActivity.this, R.layout.layout_user_listitem,
                 mUserList);
 
-        mListView.setAdapter(mAdapter);
+        mRecommendListView.setAdapter(mAdapter);
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mRecommendListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "onItemClick: selected user: " + mUserList.get(position).toString());

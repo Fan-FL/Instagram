@@ -114,11 +114,6 @@ public class BluetoothService {
             mConnectedThread = null;
         }
 
-//        // Start the thread to listen on a BluetoothServerSocket
-//        if (mSecureAcceptThread == null) {
-//            mSecureAcceptThread = new AcceptThread(true);
-//            mSecureAcceptThread.start();
-//        }
         if (mInsecureAcceptThread == null) {
             mInsecureAcceptThread = new AcceptThread(false);
             mInsecureAcceptThread.start();
@@ -179,11 +174,6 @@ public class BluetoothService {
             mConnectedThread = null;
         }
 
-        // Cancel the accept thread because we only want to connect to one device
-//        if (mSecureAcceptThread != null) {
-//            mSecureAcceptThread.cancel();
-//            mSecureAcceptThread = null;
-//        }
         if (mInsecureAcceptThread != null) {
             mInsecureAcceptThread.cancel();
             mInsecureAcceptThread = null;
@@ -218,11 +208,6 @@ public class BluetoothService {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
-
-//        if (mSecureAcceptThread != null) {
-//            mSecureAcceptThread.cancel();
-//            mSecureAcceptThread = null;
-//        }
 
         if (mInsecureAcceptThread != null) {
             mInsecureAcceptThread.cancel();
@@ -483,18 +468,6 @@ public class BluetoothService {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
-//                    byte[] newPhotoMessage = new byte[photoMessage.length + buffer.length];
-//                    System.arraycopy(photoMessage, 0, newPhotoMessage, 0, photoMessage.length);
-//                    System.arraycopy(buffer, 0, newPhotoMessage, newPhotoMessage.length, buffer
-// .length);
-//                    photoMessage = newPhotoMessage;
-//
-////                    Log.d(TAG, new String(photoMessage));
-//
-//                    String s = new String(buffer);
-//                    if (s.equals("SendingFinished")){
-//                        Log.d(TAG, "SendingFinished: "+ photoMessage);
-//                    }
 
                     // Send the obtained bytes to the UI Activity
                     mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, 0, buffer).sendToTarget();
