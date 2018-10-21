@@ -5,7 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,8 +18,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +32,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.group10.myinstagram.Bluetooth.ReceivePhotoActivity;
+import com.group10.myinstagram.Bluetooth.SendPhotoActivity;
 import com.group10.myinstagram.Login.LoginActivity;
 import com.group10.myinstagram.Models.Comment;
 import com.group10.myinstagram.Models.Like;
@@ -51,10 +56,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Context mContext = MainActivity.this;
     private static final int ACTIVITY_NUM = 0;
+
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -86,6 +93,16 @@ public class MainActivity extends AppCompatActivity {
         mFollowing = new ArrayList<>();
         mPhotos = new ArrayList<>();
 
+        ImageView btnRecive = (ImageView) findViewById(R.id.btn_receive);
+
+        btnRecive.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: receive photo via bluetooth");
+                Intent intent = new Intent(MainActivity.this, ReceivePhotoActivity.class);
+                startActivity(intent);
+
+            }
+        });
     }
 
     public void onCommentThreadSelected(Photo photo, String callingActivity){
@@ -148,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     private void getPhotos(){
