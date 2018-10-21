@@ -214,9 +214,10 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                 if (mChatService != null) {
                     mChatService.stop();
                 }
-                Intent intent = new Intent(ReceivePhotoActivity.this, MainActivity.class);
-                intent.putExtra(getString(R.string.received_image), decodedByte);
-                startActivity(intent);
+                Intent newIntent = new Intent(ReceivePhotoActivity.this, MainActivity.class);
+                newIntent.putExtra(getString(R.string.received_image), decodedByte);
+                Log.d(TAG, "onClick: send image: " + decodedByte.getByteCount());
+                startActivity(newIntent);
 
             }
         });
