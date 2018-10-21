@@ -80,7 +80,7 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
             outDir.mkdirs();
         }
         File outFile = new File(outDir, System.currentTimeMillis() + ".jpg");
-        //裁剪后图片的绝对路径
+        //absolute path of cropped image
         Log.e("111", outFile.getAbsolutePath());
         saveFilePath = outFile.getAbsolutePath();
 
@@ -179,7 +179,6 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
             }
         });
         brightnessseekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            // 当拖动条的滑块位置发生改变时触发该方法
             public void onProgressChanged(SeekBar arg0, int progress,
                                           boolean fromUser) {
                 float brightness = progress/40.0f;
@@ -198,7 +197,6 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
         });
 
         contrastseekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            // 当拖动条的滑块位置发生改变时触发该方法
             public void onProgressChanged(SeekBar arg0, int progress,
                                           boolean fromUser) {
                 float contrast = progress/50.0f;
@@ -219,22 +217,18 @@ public class GalleryPhotoEditorActivity extends AppCompatActivity {
 
     private void startUCrop(){
         File outFile = new File(saveFilePath);
-        //裁剪后图片的绝对路径
+        //file path of cropped image
         Uri destinationUri = Uri.fromFile(outFile);
         UCrop uCrop = UCrop.of(imageUri, destinationUri);
         UCrop.Options options = new UCrop.Options();
-        //设置裁剪图片可操作的手势
+        //set allowed gestures for cropping
         options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.ROTATE, UCropActivity.ALL);
-//        //是否隐藏底部容器，默认显示
+//        //whether hide bottom controls
 //        options.setHideBottomControls(true);
-        //是否能调整裁剪框
+        //whether can change crop window
         options.setFreeStyleCropEnabled(true);
-//        //设置toolbar颜色
 //        options.setToolbarColor(ActivityCompat.getColor(getActivity(), R.color.white));
-//        //设置状态栏颜色
 //        options.setStatusBarColor(ActivityCompat.getColor(getActivity(), R.color.white));
-        //是否能调整裁剪框
-        // options.setFreeStyleCropEnabled(true);
         uCrop.withOptions(options);
         uCrop.start(this);
     }

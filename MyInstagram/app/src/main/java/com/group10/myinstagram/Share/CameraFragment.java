@@ -230,7 +230,7 @@ public class CameraFragment extends Fragment {
     private TextureView.SurfaceTextureListener mTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            //当SurefaceTexture可用的时候，设置相机参数并打开相机
+            //set parameters and open camera when  urefaceTexture is ready
             setupCamera(width, height);
             openCamera();
         }
@@ -426,13 +426,6 @@ public class CameraFragment extends Fragment {
         SurfaceTexture mSurfaceTexture = mTextureView.getSurfaceTexture();
         mSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         Surface previewSurface = new Surface(mSurfaceTexture);
-//        Canvas canvas = previewSurface.lockHardwareCanvas();
-//        drawContent(canvas);
-//        previewSurface.unlockCanvasAndPost(canvas);
-
-//        Canvas canvas = mTextureView.lockCanvas();
-//        drawContent(canvas);
-//        mTextureView.unlockCanvasAndPost(canvas);
         try {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH);
@@ -502,7 +495,6 @@ public class CameraFragment extends Fragment {
     private void unLockFocus() {
         try {
             mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-            //mCameraCaptureSession.capture(mCaptureRequestBuilder.build(), null, mCameraHandler);
             mCameraCaptureSession.setRepeatingRequest(mCaptureRequest, null, mCameraHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -529,7 +521,7 @@ public class CameraFragment extends Fragment {
     }
 
     private void setupImageReader() {
-        //2代表ImageReader中最多可以获取两帧图像流
+        //2 represents ImageReader can get 2 image frame at maximum
         mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(),
                 ImageFormat.JPEG, 2);
         mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
@@ -633,14 +625,9 @@ public class CameraFragment extends Fragment {
     private class CustomView extends ImageView {
 
         private final Paint paint;
-//        private final SurfaceHolder mHolder;
-//        private final Context context;
 
         public CustomView(CameraFragment context) {
             super(context.getActivity().getBaseContext());
-//            mHolder = getHolder();
-//            mHolder.setFormat(PixelFormat.TRANSPARENT);
-//            this.context = context.getActivity().getBaseContext();
             paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setColor(Color.WHITE);
             paint.setStyle(Paint.Style.STROKE);
@@ -654,29 +641,4 @@ public class CameraFragment extends Fragment {
             canvas.drawCircle(mTextureView.getX()+mTextureView.getWidth()/2, mTextureView.getY()+mTextureView.getHeight()/2, 100, paint);
         }
     }
-
-//    private class CustomView extends SurfaceView {
-//
-//        private final Paint paint;
-//        private final SurfaceHolder mHolder;
-//        private final Context context;
-//
-//        public CustomView(CameraFragment context) {
-//            super(context.getActivity().getBaseContext());
-//            mHolder = getHolder();
-//            mHolder.setFormat(PixelFormat.TRANSPARENT);
-//            this.context = context.getActivity().getBaseContext();
-//            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//            paint.setColor(Color.WHITE);
-//            paint.setStyle(Paint.Style.STROKE);
-//        }
-//
-//        @Override
-//        protected void onDraw(Canvas canvas) {
-//            super.onDraw(canvas);
-//            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-//            canvas.drawColor(Color.TRANSPARENT);
-//            canvas.drawCircle(mTextureView.getX()+mTextureView.getWidth()/2, mTextureView.getY()+mTextureView.getHeight()/2, 100, paint);
-//        }
-//    }
 }
