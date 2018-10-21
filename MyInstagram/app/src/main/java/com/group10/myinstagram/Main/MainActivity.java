@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private double myLatitude;
     private double myLongitude;
     private ImageView btnLocation;
+    private ImageView btnTime;
 
     private FrameLayout mFrameLayout;
     private RelativeLayout mRelativeLayout;
@@ -136,6 +137,16 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Log.d(TAG, "onClick: sort by location");
                     displayPhotos(1);
+
+                }
+            });
+
+            btnTime = (ImageView) findViewById(R.id.btn_time);
+
+            btnTime.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View view) {
+                    Log.d(TAG, "onClick: sort by location");
+                    displayPhotos(0);
 
                 }
             });
