@@ -38,13 +38,11 @@ import androidx.core.content.ContextCompat;
 
 public class ReceivePhotoActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     private static final String TAG = "ReceivePhotoActivity";
-    private Context mContext = ReceivePhotoActivity.this;
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
     public DeviceListAdapter mDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     ListView newDevices;
-    private Intent intent;
-    private String imgUrl;
+    private Bitmap decodedByte;
     /**
      * Name of the connected device
      */
@@ -112,7 +110,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                         Log.d(TAG, "handleMessage: finish sending ");
                         ImageView imageView = (ImageView) findViewById(R.id.receivedImage);
                         byte[] decodedString = Base64.decode(imageString.getBytes(), Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         imageView.setImageBitmap(decodedByte);
                         Toast.makeText(ReceivePhotoActivity.this, "Receive photo success!", Toast.LENGTH_SHORT).show();
                         imageString = "";
@@ -217,6 +215,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                     mChatService.stop();
                 }
                 Intent intent = new Intent(ReceivePhotoActivity.this, MainActivity.class);
+                intent.putExtra(getString(R.string.received_image), decodedByte);
                 startActivity(intent);
 
             }
