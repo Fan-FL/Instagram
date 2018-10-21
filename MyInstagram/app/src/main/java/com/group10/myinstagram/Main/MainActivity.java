@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -36,12 +37,15 @@ import com.group10.myinstagram.Bluetooth.ReceivePhotoActivity;
 import com.group10.myinstagram.Bluetooth.SendPhotoActivity;
 import com.group10.myinstagram.Login.LoginActivity;
 import com.group10.myinstagram.Models.Comment;
+import com.group10.myinstagram.Models.InRangePhoto;
 import com.group10.myinstagram.Models.Like;
 import com.group10.myinstagram.Models.Photo;
+import com.group10.myinstagram.Models.User;
 import com.group10.myinstagram.Models.UserAccountSettings;
 import com.group10.myinstagram.R;
 import com.group10.myinstagram.Share.ShareActivity;
 import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
+import com.group10.myinstagram.Utils.InRangePhotoListAdapter;
 import com.group10.myinstagram.Utils.LocationHelper;
 import com.group10.myinstagram.Utils.Permissions;
 import com.group10.myinstagram.Utils.UniversalImageLoader;
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Context mContext = MainActivity.this;
     private static final int ACTIVITY_NUM = 0;
+    private static final double EARTH_RADIUS = 6378137.0;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -69,11 +74,18 @@ public class MainActivity extends AppCompatActivity {
     //vars
     private ArrayList<Photo> mPhotos;
     private ArrayList<String> mFollowing;
+    private ArrayList<InRangePhoto> mInrangePhotos;
     private ListView mListView;
     private UserfeedListAdapter mAdapter;
+    private InRangePhotoListAdapter mInrangeAdapter;
+    private double myLatitude;
+    private double myLongitude;
+    private ImageView btnLocation;
 
     private FrameLayout mFrameLayout;
     private RelativeLayout mRelativeLayout;
+    private Intent intent;
+    private Bitmap bitmap;
 
     private static final int VERIFY_PERMISSIONS_REQUEST = 1;
 
@@ -86,24 +98,49 @@ public class MainActivity extends AppCompatActivity {
         mFrameLayout = (FrameLayout) findViewById(R.id.container);
         mRelativeLayout = (RelativeLayout) findViewById(R.id.relLayoutParent);
 
-        setupFirebaseAuth();
         setupBottomNavigationView();
-        initImageLoader();
 
-        mListView = (ListView) findViewById(R.id.listView);
-        mFollowing = new ArrayList<>();
-        mPhotos = new ArrayList<>();
+        intent = getIntent();
+        if (intent.hasExtra(getString(R.string.received_image))) {
+            Log.d(TAG, "onCreate: get intent.");
+            Bitmap bitmap = intent.getParcelableExtra(getString(R.string.received_image));
 
-        ImageView btnRecive = (ImageView) findViewById(R.id.btn_receive);
+            mInrangePhotos = new ArrayList<>();
+            InRangePhoto inRangePhoto = new InRangePhoto(bitmap);
+            mInrangePhotos.add(inRangePhoto);
 
-        btnRecive.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: receive photo via bluetooth");
-                Intent intent = new Intent(MainActivity.this, ReceivePhotoActivity.class);
-                startActivity(intent);
+            mInrangeAdapter = new InRangePhotoListAdapter(mContext, R.layout.layout_inrange_listitem, mInrangePhotos);
+            mListView.setAdapter(mInrangeAdapter);
+        } else {
+            setupFirebaseAuth();
+            initImageLoader();
 
-            }
-        });
+            mListView = (ListView) findViewById(R.id.listView);
+            mFollowing = new ArrayList<>();
+            mPhotos = new ArrayList<>();
+
+            ImageView btnRecive = (ImageView) findViewById(R.id.btn_receive);
+
+            btnRecive.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View view) {
+                    Log.d(TAG, "onClick: receive photo via bluetooth");
+                    Intent intent = new Intent(MainActivity.this, ReceivePhotoActivity.class);
+                    startActivity(intent);
+
+                }
+            });
+
+            btnLocation = (ImageView) findViewById(R.id.btn_location);
+
+            btnLocation.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View view) {
+                    Log.d(TAG, "onClick: sort by location");
+                    displayPhotos(1);
+
+                }
+            });
+        }
+
     }
 
     public void onCommentThreadSelected(Photo photo, String callingActivity){
@@ -193,6 +230,14 @@ public class MainActivity extends AppCompatActivity {
                         photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
                         photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
                         photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+                        if (objectMap.get(getString(R.string.field_latitude)) != null &&
+                                objectMap.get(getString(R.string.field_longitude)) != null) {
+                            photo.setLatitude(Double.parseDouble(objectMap.get(getString(R.string.field_latitude)).toString()));
+                            photo.setLongitude(Double.parseDouble(objectMap.get(getString(R.string.field_longitude)).toString()));
+                        } else {
+                            photo.setLatitude(0);
+                            photo.setLongitude(0);
+                        }
 
                         ArrayList<Like> likes = new ArrayList<Like>();
                         for (DataSnapshot dSnapshot : singleSnapshot
@@ -220,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if(count >= mFollowing.size() -1){
                         //display our photos
-                        displayPhotos();
+                        displayPhotos(0);
                     }
                 }
 
@@ -232,18 +277,81 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void displayPhotos(){
-        if(mPhotos != null){
-            Collections.sort(mPhotos, new Comparator<Photo>() {
-                @Override
-                public int compare(Photo o1, Photo o2) {
-                    return o2.getDate_created().compareTo(o1.getDate_created());
+    private void getLocation() {
+        Log.d(TAG, "getUserLocation: get current user location.");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference
+                .child(mContext.getString(R.string.dbname_users))
+                .orderByChild(mContext.getString(R.string.field_user_id))
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, "onDataChange: get user location.");
+                    myLongitude = singleSnapshot.getValue(User.class).getLongitude();
+                    myLatitude = singleSnapshot.getValue(User.class).getLatitude();
+                    getFollowing();
                 }
-            });
+            }
 
-            mAdapter = new UserfeedListAdapter(mContext, R.layout.layout_userfeed_listitem, mPhotos);
-            mListView.setAdapter(mAdapter);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void displayPhotos(int sortMode){
+        if (sortMode == 0) {
+            // sort by time
+            if(mPhotos != null){
+                Collections.sort(mPhotos, new Comparator<Photo>() {
+                    @Override
+                    public int compare(Photo o1, Photo o2) {
+                        return o2.getDate_created().compareTo(o1.getDate_created());
+                    }
+                });
+
+                mAdapter = new UserfeedListAdapter(mContext, R.layout.layout_userfeed_listitem, mPhotos);
+                mListView.setAdapter(mAdapter);
+            }
+        } else if (sortMode == 1) {
+            Log.d(TAG, "displayPhotos: sort by location.");
+            // sort by location
+            if(mPhotos != null){
+                Collections.sort(mPhotos, new Comparator<Photo>() {
+                    @Override
+                    public int compare(Photo o1, Photo o2) {
+                        double dis1 = Math.abs(getDistance(myLongitude, myLatitude, o1.getLongitude(), o1.getLatitude()));
+                        double dis2 = Math.abs(getDistance(myLongitude, myLatitude, o2.getLongitude(), o2.getLatitude()));
+                        int i = (int) (dis1 - dis2);
+                        return i;
+                    }
+                });
+
+                mAdapter = new UserfeedListAdapter(mContext, R.layout.layout_userfeed_listitem, mPhotos);
+                mListView.setAdapter(mAdapter);
+            }
         }
+    }
+
+    public double getDistance(double longitude1, double latitude1,
+                              double longitude2, double latitude2) {
+        double Lat1 = rad(latitude1);
+        double Lat2 = rad(latitude2);
+        double a = Lat1 - Lat2;
+        double b = rad(longitude1) - rad(longitude2);
+        double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2)
+                + Math.cos(Lat1) * Math.cos(Lat2)
+                * Math.pow(Math.sin(b / 2), 2)));
+        s = s * EARTH_RADIUS;
+        s = Math.round(s * 10000) / 10000;
+        return s;
+    }
+
+    private double rad(double d) {
+        return d * Math.PI / 180.0;
     }
 
     // navigation bar
@@ -283,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //check if the user is logged in
                 checkCurrentUser(user);
-                getFollowing();
+                getLocation();
                 updateLocation(user);
                 if(user != null){
                     Log.d(TAG, "onAuthStateChanged: signed_in: "+ user.getUid());

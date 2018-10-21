@@ -22,9 +22,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.group10.myinstagram.Main.MainActivity;
 import com.group10.myinstagram.Models.Comment;
 import com.group10.myinstagram.Models.Like;
+import com.group10.myinstagram.Models.Notification;
 import com.group10.myinstagram.Models.Photo;
 import com.group10.myinstagram.Models.User;
 import com.group10.myinstagram.Models.UserAccountSettings;
+import com.group10.myinstagram.Profile.ProfileActivity;
 import com.group10.myinstagram.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -40,6 +42,7 @@ import java.util.TimeZone;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserfeedListAdapter extends ArrayAdapter<Photo> {
@@ -50,6 +53,11 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
     private Context mContext;
     private DatabaseReference mReference;
     private String currentUsername = "";
+
+    private double longitude;
+    private double latitude;
+
+    private static final double EARTH_RADIUS = 6378137.0;
 
     public UserfeedListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<Photo> objects) {
         super(context, resource, objects);
@@ -62,14 +70,13 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
     static class ViewHolder{
         CircleImageView mprofileImage;
         String likesString;
-        TextView username, timeDetla, caption, likes, comments;
+        TextView username, timeDetla, caption, likes, comments, imageLocation;
         SquareImageView image;
         ImageView heartRed, heartWhite, comment;
 
         UserAccountSettings settings = new UserAccountSettings();
         User user  = new User();
         StringBuilder users;
-        String mLikesString;
         boolean likeByCurrentUser;
         LikeAnimation heart;
         GestureDetector detector;
@@ -101,6 +108,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
             holder.caption = (TextView) convertView.findViewById(R.id.image_caption);
             holder.timeDetla = (TextView) convertView.findViewById(R.id.image_time_posted);
             holder.mprofileImage = (CircleImageView) convertView.findViewById(R.id.profile_photo);
+            holder.imageLocation = (TextView) convertView.findViewById(R.id.image_location);
             holder.detector = new GestureDetector(mContext, new GestureListener(holder, getItem(position)));
             holder.heart = new LikeAnimation(holder.heartWhite, holder.heartRed);
             holder.photo = getItem(position);
@@ -136,6 +144,8 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
             }
         });
 
+        setCurrentDistance(getItem(position).getLongitude(), getItem(position).getLatitude(), holder);
+
         //set the time it was posted
         // TODO: show minutes difference
         String timestampDifference = getTimestampDifference(getItem(position));
@@ -144,6 +154,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
         }else{
             holder.timeDetla.setText("TODAY");
         }
+
 
         //set the profile image
         final ImageLoader imageLoader = ImageLoader.getInstance();
@@ -168,8 +179,6 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                             + singleSnapshot.getValue(UserAccountSettings.class).getUsername());
 
                     holder.username.setText(singleSnapshot.getValue(UserAccountSettings.class).getUsername());
-                    /**
-                     * TODO: click show user profile
                     holder.username.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -182,12 +191,10 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                             intent.putExtra(mContext.getString(R.string.intent_user), holder.user);
                             mContext.startActivity(intent);
                         }
-                    });*/
+                    });
 
                     imageLoader.displayImage(singleSnapshot.getValue(UserAccountSettings.class).getProfile_photo(),
                             holder.mprofileImage);
-                    /**
-                     * TODO: click show user profile
                     holder.mprofileImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -200,7 +207,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                             intent.putExtra(mContext.getString(R.string.intent_user), holder.user);
                             mContext.startActivity(intent);
                         }
-                    });*/
+                    });
 
 
                     holder.settings = singleSnapshot.getValue(UserAccountSettings.class);
@@ -332,6 +339,19 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
     private void addNewLike(final ViewHolder holder, Photo photo){
         Log.d(TAG, "addNewLike: adding new like");
 
+        Notification notification = new Notification();
+        notification.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        notification.setAction(mContext.getString(R.string.action_like));
+        notification.setCreate_time(getTimestamp());
+        notification.setImage_path(photo.getImage_path());
+        String newNotificationID = FirebaseDatabase.getInstance().getReference().push().getKey();
+
+        FirebaseDatabase.getInstance().getReference()
+                .child(mContext.getString(R.string.dbname_notification))
+                .child(photo.getUser_id())
+                .child(newNotificationID)
+                .setValue(notification);
+
         String newLikeID = mReference.push().getKey();
         Like like = new Like();
         like.setUsername(currentUsername);
@@ -356,6 +376,12 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
 
         holder.heart.toggleLike();
         getLikesString(holder, photo);
+    }
+
+    private String getTimestamp(){
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("Australia/Sydney"));
+        return sdf.format(new java.util.Date());
     }
 
     private void getCurrentUsername(){
@@ -428,7 +454,7 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
                         + ", " + splitUsers[1]
                         + ", " + splitUsers[2]
                         + " and " + (splitUsers.length - 3) + " others";
-            } else {
+            } else if (length == 0){
                 holder.likesString = "";
             }
             Log.d(TAG, "onDataChange: likes string: " + holder.likesString);
@@ -468,6 +494,62 @@ public class UserfeedListAdapter extends ArrayAdapter<Photo> {
             });
         }
         holder.likes.setText(likesString);
+    }
+
+    private void setCurrentDistance(final double longitude, final double latitude, final ViewHolder holder) {
+        Log.d(TAG, "getUserLocation: get current user location.");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference
+                .child(mContext.getString(R.string.dbname_users))
+                .orderByChild(mContext.getString(R.string.field_user_id))
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, "onDataChange: get user location.");
+                    double mLongitude = singleSnapshot.getValue(User.class).getLongitude();
+                    double mLatitude = singleSnapshot.getValue(User.class).getLatitude();
+                    Log.d(TAG, "getUserLocation: current longitude: " + mLongitude);
+                    Log.d(TAG, "getUserLocation: current latitude: " + mLatitude);
+                    double distance = getDistance(longitude, latitude, mLongitude, mLatitude);
+
+                    if (distance < 10) {
+                        holder.imageLocation.setText("nearby");
+                    } else if (distance < 1000){
+                        int d = (int) Math.ceil(distance);
+                        holder.imageLocation.setText("from " + d + "m away");
+                    } else {
+                        int d = (int) Math.ceil(distance) % 1000;
+                        holder.imageLocation.setText("from " + d + "km away");
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public double getDistance(double longitude1, double latitude1,
+                              double longitude2, double latitude2) {
+        double Lat1 = rad(latitude1);
+        double Lat2 = rad(latitude2);
+        double a = Lat1 - Lat2;
+        double b = rad(longitude1) - rad(longitude2);
+        double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2)
+                + Math.cos(Lat1) * Math.cos(Lat2)
+                * Math.pow(Math.sin(b / 2), 2)));
+        s = s * EARTH_RADIUS;
+        s = Math.round(s * 10000) / 10000;
+        return s;
+    }
+
+    private double rad(double d) {
+        return d * Math.PI / 180.0;
     }
 
     /**

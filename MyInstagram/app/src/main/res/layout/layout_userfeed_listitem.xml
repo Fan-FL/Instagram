@@ -142,6 +142,18 @@
                 android:id="@+id/image_time_posted"
                 android:layout_marginTop="15dp"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="nearby"
+                android:textColor="@color/grey"
+                android:textSize="18sp"
+                android:layout_below="@+id/image_comments_link"
+                android:layout_toRightOf="@+id/image_time_posted"
+                android:layout_marginLeft="7dp"
+                android:id="@+id/image_location"
+                android:layout_marginTop="15dp"/>
+
         </RelativeLayout>
 
 

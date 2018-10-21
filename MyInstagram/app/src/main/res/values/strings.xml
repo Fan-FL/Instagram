@@ -10,6 +10,7 @@
     <string name="edit_profile_fragment">Edit Profile</string>
     <string name="sign_out_fragment">Sign Out</string>
     <string name="profile_fragment">Profile</string>
+    <string name="view_profile_fragment">ViewProfile</string>
 
     <!-- Firebase -->
     <string name="auth_failed">Failed to Authenticate</string>
@@ -22,6 +23,7 @@
     <string name="dbname_photos">photos</string>
     <string name="dbname_following">following</string>
     <string name="dbname_followers">followers</string>
+    <string name="dbname_notification">notification</string>
 
     <string name="field_username">username</string>
     <string name="field_email">email</string>
@@ -45,8 +47,14 @@
     <string name="field_duration">duration</string>
     <string name="field_profile_photo">profile_photo</string>
     <string name="field_timestamp">timestamp</string>
+    <string name="field_followers">followers</string>
+    <string name="field_following">following</string>
     <string name="field_longitude">longitude</string>
     <string name="field_latitude">latitude</string>
+
+    <!-- Action -->
+    <string name="action_follow">follow</string>
+    <string name="action_like">like</string>
 
     <!-- Dialog names -->
     <string name="confirm_password_dialog">ConfirmPasswordDialog</string>
@@ -57,10 +65,12 @@
 
     <!-- Intent Extras -->
     <string name="calling_activity">Calling Activity</string>
+    <string name="intent_user">intent_user</string>
 
     <!-- Activity -->
     <string name="profile_activity">Profile Activity</string>
     <string name="main_activity">Main Activity</string>
+    <string name="search_activity">Search Activity</string>
 
     <!-- fragment names -->
     <string name="view_comments_fragment">View Comments</string>
