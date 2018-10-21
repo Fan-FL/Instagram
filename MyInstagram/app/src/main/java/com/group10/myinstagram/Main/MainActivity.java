@@ -11,9 +11,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,6 +56,7 @@ import com.group10.myinstagram.Utils.UserfeedListAdapter;
 import com.group10.myinstagram.Utils.ViewCommentsFragment;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -75,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Photo> mPhotos;
     private ArrayList<String> mFollowing;
     private ArrayList<InRangePhoto> mInrangePhotos;
+    private ArrayList<String> mfileNames;
     private ListView mListView;
     private UserfeedListAdapter mAdapter;
     private InRangePhotoListAdapter mInrangeAdapter;
@@ -98,60 +102,82 @@ public class MainActivity extends AppCompatActivity {
 
         mFrameLayout = (FrameLayout) findViewById(R.id.container);
         mRelativeLayout = (RelativeLayout) findViewById(R.id.relLayoutParent);
+        mListView = (ListView) findViewById(R.id.listView);
 
         setupBottomNavigationView();
 
-        intent = getIntent();
-        if (intent.hasExtra(getString(R.string.received_image))) {
-            Log.d(TAG, "onCreate: get intent.");
-            Bitmap bitmap = intent.getParcelableExtra(getString(R.string.received_image));
 
-            mInrangePhotos = new ArrayList<>();
-            InRangePhoto inRangePhoto = new InRangePhoto(bitmap);
-            mInrangePhotos.add(inRangePhoto);
+        Log.d(TAG, "onCreate: without intent.");
+        setupFirebaseAuth();
+        initImageLoader();
 
-            mInrangeAdapter = new InRangePhotoListAdapter(mContext, R.layout.layout_inrange_listitem, mInrangePhotos);
-            mListView.setAdapter(mInrangeAdapter);
-        } else {
-            setupFirebaseAuth();
-            initImageLoader();
+        mFollowing = new ArrayList<>();
+        mPhotos = new ArrayList<>();
 
-            mListView = (ListView) findViewById(R.id.listView);
-            mFollowing = new ArrayList<>();
-            mPhotos = new ArrayList<>();
+        ImageView btnRecive = (ImageView) findViewById(R.id.btn_receive);
 
-            ImageView btnRecive = (ImageView) findViewById(R.id.btn_receive);
+        btnRecive.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: receive photo via bluetooth");
+                Intent intent = new Intent(MainActivity.this, ReceivePhotoActivity.class);
+                startActivity(intent);
+            }
+        });
 
-            btnRecive.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View view) {
-                    Log.d(TAG, "onClick: receive photo via bluetooth");
-                    Intent intent = new Intent(MainActivity.this, ReceivePhotoActivity.class);
-                    startActivity(intent);
+        ImageView btnInrange = (ImageView) findViewById(R.id.btn_inrange);
 
+        btnInrange.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: show photo via bluetooth");
+                getAllFilePath();
+
+                mInrangePhotos = new ArrayList<>();
+                for (String filepath:mfileNames) {
+                    File imgFile = new  File(filepath);
+                    if(imgFile.exists()) {
+                        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                        InRangePhoto inRangePhoto = new InRangePhoto(myBitmap);
+                        mInrangePhotos.add(inRangePhoto);
+                    }
                 }
-            });
+                mInrangeAdapter = new InRangePhotoListAdapter(mContext, R.layout.layout_inrange_listitem, mInrangePhotos);
+                mListView.setAdapter(mInrangeAdapter);
+            }
+        });
 
-            btnLocation = (ImageView) findViewById(R.id.btn_location);
+        btnLocation = (ImageView) findViewById(R.id.btn_location);
 
-            btnLocation.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View view) {
-                    Log.d(TAG, "onClick: sort by location");
-                    displayPhotos(1);
+        btnLocation.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: sort by location");
+                displayPhotos(1);
 
-                }
-            });
+            }
+        });
 
-            btnTime = (ImageView) findViewById(R.id.btn_time);
+        btnTime = (ImageView) findViewById(R.id.btn_time);
 
-            btnTime.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View view) {
-                    Log.d(TAG, "onClick: sort by location");
-                    displayPhotos(0);
+        btnTime.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: sort by location");
+                displayPhotos(0);
 
-                }
-            });
+            }
+        });
+
+    }
+
+    private void getAllFilePath() {
+        mfileNames = new ArrayList<>();
+        String path = Environment.getExternalStorageDirectory() + "/DCIM/MyInstagram/Bluetooth/";
+        File folder = new File(path);
+        if (!folder.exists()) {
+            folder.mkdirs();
         }
-
+        for (final File fileEntry : folder.listFiles()) {
+            Log.d(TAG, "getAllFilePath: filename: " + fileEntry.getName());
+            mfileNames.add(path+fileEntry.getName());
+        }
     }
 
     public void onCommentThreadSelected(Photo photo, String callingActivity){

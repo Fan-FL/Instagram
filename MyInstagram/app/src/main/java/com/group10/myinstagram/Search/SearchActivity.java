@@ -142,10 +142,14 @@ public class SearchActivity extends AppCompatActivity {
                     mRecommendList.add(singleSnapshot.getValue(User.class));
                 }
                 mRecommendList = orderByDistance(mRecommendList);
+                int index = -1;
                 for (User user:mRecommendList) {
                     if (user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                        mRecommendList.remove(user);
+                        index = mRecommendList.indexOf(user);
                     }
+                }
+                if (index != -1) {
+                    mRecommendList.remove(mRecommendList.get(index));
                 }
                 //update the users list view
                 updateRecommendList();

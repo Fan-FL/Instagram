@@ -227,7 +227,7 @@ public class ReceivePhotoActivity extends AppCompatActivity implements AdapterVi
                     mChatService.stop();
                 }
                 Intent newIntent = new Intent(ReceivePhotoActivity.this, MainActivity.class);
-//                newIntent.putExtra(getString(R.string.received_image), decodedByte);
+                //newIntent.putExtra(getString(R.string.received_image), "finished");
                 Log.d(TAG, "onClick: send image: " + decodedByte.getByteCount());
                 startActivity(newIntent);
 
