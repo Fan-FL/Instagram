@@ -42,9 +42,11 @@ public class SearchActivity extends AppCompatActivity {
     //widgets
     private EditText mSearchParam;
     private ListView mListView;
+    private ListView mRecommendListView;
 
     //vars
     private List<User> mUserList;
+    private List<User> mRecommendList;
     private UserListAdapter mAdapter;
 
     @Override
@@ -53,10 +55,14 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         mSearchParam = (EditText) findViewById(R.id.search);
         mListView = (ListView) findViewById(R.id.listView);
+        mRecommendListView = (ListView) findViewById(R.id.lvRecommend);
         Log.d(TAG,"onCreate: started");
+
+        mRecommendList = new ArrayList<>();
 
         hideSoftKeyboard();
         initTextListener();
+        setupRecommendList();
         setupBottomNavigationView();
     }
 
@@ -113,6 +119,53 @@ public class SearchActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void setupRecommendList() {
+        Log.d(TAG, "setupRecommendList: setup recommendation user list");
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbname_users))
+                .orderByChild(getString(R.string.field_username));
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found user:" +
+                            singleSnapshot.getValue(User.class).toString());
+
+                    mRecommendList.add(singleSnapshot.getValue(User.class));
+                    //update the users list view
+                    updateRecommendList();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void updateRecommendList() {
+        Log.d(TAG, "updateUsersList: updating recommendation user list");
+
+        mAdapter = new UserListAdapter(SearchActivity.this, R.layout.layout_user_listitem, mRecommendList);
+
+        mRecommendListView.setAdapter(mAdapter);
+
+        mRecommendListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "onItemClick: selected user: " + mRecommendList.get(position).toString());
+
+                //navigate to profile activity
+                Intent intent =  new Intent(SearchActivity.this, ProfileActivity.class);
+                intent.putExtra(getString(R.string.calling_activity), getString(R.string.search_activity));
+                intent.putExtra(getString(R.string.intent_user), mRecommendList.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     private void updateUsersList(){
