@@ -45,6 +45,8 @@
     <string name="field_duration">duration</string>
     <string name="field_profile_photo">profile_photo</string>
     <string name="field_timestamp">timestamp</string>
+    <string name="field_longitude">longitude</string>
+    <string name="field_latitude">latitude</string>
 
     <!-- Dialog names -->
     <string name="confirm_password_dialog">ConfirmPasswordDialog</string>

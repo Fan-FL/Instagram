@@ -2,10 +2,15 @@ package com.group10.myinstagram.Main;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -30,7 +35,10 @@ import com.group10.myinstagram.Models.Like;
 import com.group10.myinstagram.Models.Photo;
 import com.group10.myinstagram.Models.UserAccountSettings;
 import com.group10.myinstagram.R;
+import com.group10.myinstagram.Share.ShareActivity;
 import com.group10.myinstagram.Utils.BottomNavigationViewHelper;
+import com.group10.myinstagram.Utils.LocationHelper;
+import com.group10.myinstagram.Utils.Permissions;
 import com.group10.myinstagram.Utils.UniversalImageLoader;
 import com.group10.myinstagram.Utils.UserfeedListAdapter;
 import com.group10.myinstagram.Utils.ViewCommentsFragment;
@@ -40,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -58,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout mFrameLayout;
     private RelativeLayout mRelativeLayout;
 
+    private static final int VERIFY_PERMISSIONS_REQUEST = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         mListView = (ListView) findViewById(R.id.listView);
         mFollowing = new ArrayList<>();
         mPhotos = new ArrayList<>();
+
     }
 
     public void onCommentThreadSelected(Photo photo, String callingActivity){
@@ -238,7 +250,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(mContext, LoginActivity.class);
             startActivity(intent);
         }
-
     }
     /**
      * Setting up Firebase auth object."
@@ -254,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
                 //check if the user is logged in
                 checkCurrentUser(user);
                 getFollowing();
+                updateLocation(user);
                 if(user != null){
                     Log.d(TAG, "onAuthStateChanged: signed_in: "+ user.getUid());
                 }else {
@@ -261,6 +273,35 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    private void updateLocation(FirebaseUser user) {
+        if(checkPermissionArray(Permissions.PERMISSIONS)){
+            Location location = LocationHelper.getLocation(user, mContext);
+            if(location == null){
+                    DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
+                    mReference.child(getString(R.string.dbname_users))
+                            .child(user.getUid())
+                            .child(getString(R.string.field_longitude))
+                            .setValue(37.8136);
+                    mReference.child(getString(R.string.dbname_users))
+                            .child(user.getUid())
+                            .child(getString(R.string.field_latitude))
+                            .setValue(144.9631);
+            }else {
+                DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
+                mReference.child(getString(R.string.dbname_users))
+                        .child(user.getUid())
+                        .child(getString(R.string.field_longitude))
+                        .setValue(location.getLongitude());
+                mReference.child(getString(R.string.dbname_users))
+                        .child(user.getUid())
+                        .child(getString(R.string.field_latitude))
+                        .setValue(location.getLatitude());
+            }
+        }else {
+            verifyPermissions(Permissions.PERMISSIONS);
+        }
     }
 
     @Override
@@ -276,5 +317,54 @@ public class MainActivity extends AppCompatActivity {
         if(mAuthStateListener != null){
             mAuth.removeAuthStateListener(mAuthStateListener);
         }
+    }
+
+    /**
+     * Check an array of permissions
+     * @param permissions
+     * @return
+     */
+    public boolean checkPermissionArray(String[] permissions) {
+        Log.d(TAG, "checkPermissionArray: checking permissions array. ");
+
+        for(int i =0; i< permissions.length; i++){
+            String check = permissions[i];
+            if(!checkPermission(check)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check a single permission is it has been verified
+     * @param permission
+     * @return
+     */
+    public boolean checkPermission(String permission) {
+        Log.d(TAG, "checkPermission: checking permission: " + permission);
+
+        int permissionRequest = ActivityCompat.checkSelfPermission(MainActivity.this, permission);
+
+        if(permissionRequest != PackageManager.PERMISSION_GRANTED){
+            Log.d(TAG, "checkPermission: checkPermissions: Permission was not granted for: ");
+            return false;
+        }else {
+            Log.d(TAG, "checkPermission: checkPermissions: Permission was granted for: ");
+            return true;
+        }
+    }
+
+    /**
+     * verify all the permissions passed to the array
+     * @param permissions
+     */
+    private void verifyPermissions(String[] permissions) {
+        Log.d(TAG, "verifyPermissions: verifying permissions.");
+
+        ActivityCompat.requestPermissions(
+                MainActivity.this, permissions,VERIFY_PERMISSIONS_REQUEST
+        );
+
     }
 }

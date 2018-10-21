@@ -9,6 +9,17 @@ public class User implements Parcelable {
     private long phone_number;
     private String email;
     private String username;
+    private double longitude;
+    private double latitude;
+
+    public User(String user_id, long phone_number, String email, String username, double longitude, double latitude) {
+        this.user_id = user_id;
+        this.phone_number = phone_number;
+        this.email = email;
+        this.username = username;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
 
     public User(String user_id, long phone_number, String email, String username) {
         this.user_id = user_id;
@@ -21,12 +32,30 @@ public class User implements Parcelable {
 
     }
 
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
 
     protected User(Parcel in) {
         user_id = in.readString();
         phone_number = in.readLong();
         email = in.readString();
         username = in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -95,5 +124,7 @@ public class User implements Parcelable {
         dest.writeLong(phone_number);
         dest.writeString(email);
         dest.writeString(username);
+        dest.writeDouble(longitude);
+        dest.writeDouble(latitude);
     }
 }

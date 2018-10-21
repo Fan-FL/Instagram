@@ -1,8 +1,11 @@
 package com.group10.myinstagram.Utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,6 +36,7 @@ import com.group10.myinstagram.Share.PhotoManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -318,7 +322,17 @@ public class FirebaseMethods {
         photo.setImage_path(url);
         photo.setPhoto_id(newPhotoKey);
         photo.setTags(tags);
-        photo.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        photo.setUser_id(user.getUid());
+
+        Location location = LocationHelper.getLocation(user, mContext);
+        if(location == null){
+            photo.setLatitude(144.9631);
+            photo.setLongitude(37.8136);
+        }else {
+            photo.setLatitude(location.getLatitude());
+            photo.setLongitude(location.getLongitude());
+        }
 
         //insert into database;
         myReference.child(mContext.getString(R.string.dbname_user_photos))

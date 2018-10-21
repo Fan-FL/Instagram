@@ -13,13 +13,15 @@ public class FileSearch {
      */
     public static ArrayList<String> getDirectoryPaths(String directory){
         ArrayList<String> pathArray = new ArrayList<>();
-        pathArray.add(directory);
         File file = new File(directory);
-        File[] listfiles = file.listFiles();
-        for(int i = 0; i<listfiles.length; i++){
-            if(listfiles[i].isDirectory()){
-                if(hasImage(listfiles[i].getAbsolutePath())){
-                    pathArray.add(listfiles[i].getAbsolutePath());
+        if(file.exists()){
+            pathArray.add(directory);
+            File[] listfiles = file.listFiles();
+            for(int i = 0; i<listfiles.length; i++){
+                if(listfiles[i].isDirectory()){
+                    if(hasImage(listfiles[i].getAbsolutePath())){
+                        pathArray.add(listfiles[i].getAbsolutePath());
+                    }
                 }
             }
         }

@@ -15,7 +15,38 @@ public class Photo implements Parcelable {
     private String tags;
     private List<Like> likes;
     private List<Comment> comments;
+    private double longitude;
+    private double latitude;
 
+    public Photo(String caption, String date_created, String image_path, String photo_id, String user_id, String tags, List<Like> likes, List<Comment> comments, double longitude, double latitude) {
+        this.caption = caption;
+        this.date_created = date_created;
+        this.image_path = image_path;
+        this.photo_id = photo_id;
+        this.user_id = user_id;
+        this.tags = tags;
+        this.likes = likes;
+        this.comments = comments;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
 
     public Photo() {
 
