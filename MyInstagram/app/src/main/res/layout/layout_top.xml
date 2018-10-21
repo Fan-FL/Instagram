@@ -24,6 +24,16 @@
             android:layout_marginEnd="8dp"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
+            app:srcCompat="@drawable/ic_bluetooth" />
+
+        <ImageView
+            android:id="@+id/btn_inrange"
+            android:layout_width="33dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/btn_receive"
             app:srcCompat="@drawable/ic_receive" />
 
         <ImageView
@@ -33,7 +43,17 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/btn_receive"
-            app:srcCompat="@drawable/ic_android" />
+            android:layout_toLeftOf="@id/btn_inrange"
+            app:srcCompat="@drawable/ic_location" />
+
+        <ImageView
+            android:id="@+id/btn_time"
+            android:layout_width="33dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/btn_location"
+            app:srcCompat="@drawable/ic_time" />
     </RelativeLayout>
 </merge>
