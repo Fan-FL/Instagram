@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Button;
@@ -81,6 +82,17 @@ public class MainActivity extends AppCompatActivity {
         mListView = (ListView) findViewById(R.id.listView);
         mFollowing = new ArrayList<>();
         mPhotos = new ArrayList<>();
+
+        ImageView btnRecive = (ImageView) findViewById(R.id.btn_receive);
+
+        btnRecive.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: receive photo via bluetooth");
+                Intent intent = new Intent(MainActivity.this, ReceivePhotoActivity.class);
+                startActivity(intent);
+
+            }
+        });
     }
 
     public void onCommentThreadSelected(Photo photo, String callingActivity){

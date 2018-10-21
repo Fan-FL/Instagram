@@ -24,7 +24,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.group10.myinstagram.Main.MainActivity;
 import com.group10.myinstagram.R;
+import com.group10.myinstagram.Share.NextActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -121,6 +123,7 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
                         byte[] decodedString = Base64.decode(imageString.getBytes(), Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         imageView.setImageBitmap(decodedByte);
+                        imageString = "";
                     } else {
                         imageString = imageString + readMessage;
                         Log.d(TAG, "read message: "+readMessage);
@@ -228,6 +231,24 @@ public class SendPhotoActivity extends AppCompatActivity implements AdapterView.
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                Toast.makeText(SendPhotoActivity.this, "Attempting to share photo via bluetooth.",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        Button btnFinish = (Button) findViewById(R.id.btn_finish);
+
+        btnFinish.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: finish");
+                unregisterReceiver(mBroadcastReceiver);
+                unregisterReceiver(mBondDetecter);
+                if (mChatService != null) {
+                    mChatService.stop();
+                }
+                Intent intent = new Intent(SendPhotoActivity.this, MainActivity.class);
+                startActivity(intent);
 
             }
         });
